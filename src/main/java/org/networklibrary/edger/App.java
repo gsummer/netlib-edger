@@ -23,7 +23,7 @@ public class App
     	Options options = new Options();
     	Option help = OptionBuilder.withDescription("Help message").create("help");
     	Option dbop = OptionBuilder.withArgName("[URL]").hasArg().withDescription("Neo4j instance to prime").withLongOpt("target").withType(String.class).create("db");
-    	Option typeop = OptionBuilder.withArgName("[TYPE]").hasArg().withDescription("Types available: CyTargetLinker XGMML = cytlxgmml").withType(String.class).create("t");
+    	Option typeop = OptionBuilder.withArgName("[TYPE]").hasArg().withDescription("Types available:").withType(String.class).create("t");
     	
     	options.addOption(help);
     	options.addOption(dbop);
@@ -35,10 +35,11 @@ public class App
             
             CommandLine line = parser.parse( options, args );
             
-            if(line.hasOption("help")){
+            if(line.hasOption("help") || args.length == 0){
             	HelpFormatter formatter = new HelpFormatter();
-            	formatter.printHelp( "netlibprimer [OPTIONS] [FILE]", options );
+            	formatter.printHelp( "netlib-edger [OPTIONS] [FILE]", options );
             	System.out.println(EdgeImporter.printSupportedTypes());
+            	return;
             }
             
             String db = null;
@@ -48,7 +49,7 @@ public class App
             
             String type = null;
             if(line.hasOption("t")){
-            	db = line.getOptionValue("t");
+            	type = line.getOptionValue("t");
             }
             
             List<String> inputFiles = line.getArgList();

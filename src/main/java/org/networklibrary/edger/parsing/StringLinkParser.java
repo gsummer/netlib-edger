@@ -26,7 +26,7 @@ public class StringLinkParser implements Parser {
 		if(!line.isEmpty()){
 			res = new LinkedList<EdgeData>();
 			
-			String[] values = line.split("\\t",-1);
+			String[] values = line.split("\\s",-1);
 			
 			if(values.length != columns.size()){
 				throw new IllegalArgumentException("number of elements in row does not match number of columns " + line);
@@ -43,7 +43,7 @@ public class StringLinkParser implements Parser {
 			String to = values[1].replace("9606.","");
 			
 			res.add(new EdgeData(from,to,EDGE_TYPE,props));
-			res.add(new EdgeData(to,from,EDGE_TYPE,props));
+			//res.add(new EdgeData(to,from,EDGE_TYPE,props));
 			
 		}
 		
@@ -52,6 +52,11 @@ public class StringLinkParser implements Parser {
 
 	@Override
 	public void parseHeader(String header) {
-		columns = Arrays.asList(header.split("\\t",-1));
+		columns = Arrays.asList(header.split("\\s",-1));
+	}
+
+	@Override
+	public boolean hasHeader() {
+		return true;
 	}
 }

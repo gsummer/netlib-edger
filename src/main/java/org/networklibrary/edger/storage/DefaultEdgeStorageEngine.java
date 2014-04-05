@@ -5,19 +5,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.neo4j.cypher.javacompat.ExecutionEngine;
 import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.index.IndexHits;
 import org.neo4j.rest.graphdb.RestGraphDatabase;
 import org.networklibrary.core.storage.StorageEngine;
 import org.networklibrary.core.types.EdgeData;
 
 public class DefaultEdgeStorageEngine implements StorageEngine<EdgeData> {
 
-	public static String ID_INDEX = "MATCH";
+	public static String MATCH = "matchid";
 	
 	private GraphDatabaseService graph = null;
 	
@@ -29,13 +29,16 @@ public class DefaultEdgeStorageEngine implements StorageEngine<EdgeData> {
 
 	public void store(EdgeData curr) {
 		
-		ExecutionEngine engine = new ExecutionEngine( graph );
+		Node from = getNode(curr.getFromID(),graph);
+		Node to = getNode(curr.getToID(),graph);
 		
-		Node from = getNode(curr.getFromID(),graph,engine);
-		Node to = getNode(curr.getToID(),graph,engine);
+		if(from == null || to == null){
+			// error condition
+			return;
+		}
 		
 		try ( Transaction tx = graph.beginTx() ){
-			Relationship r = from.createRelationshipTo(to, DynamicRelationshipType.withName(curr.getToID()));
+			Relationship r = from.createRelationshipTo(to, DynamicRelationshipType.withName(curr.getType()));
 			for(Entry<String,Object> prop : curr.getProperties().entrySet()) {
 				r.setProperty(prop.getKey(), prop.getValue());
 			}
@@ -53,12 +56,18 @@ public class DefaultEdgeStorageEngine implements StorageEngine<EdgeData> {
 		}
 	}
 
-	protected Node getNode(String name, GraphDatabaseService g, ExecutionEngine engine){
-		Node result = nodeCache.get(name);;
-		
+	protected Node getNode(String name, GraphDatabaseService g){
+		Node result = nodeCache.get(name);
+			
 		if(result == null){
-			// get from index;
-			// nodeCache.put(name,result);
+			IndexHits<Node> hits = g.index().forNodes("matchable").get(MATCH, name);
+			
+			if(hits.size() > 1){
+				// error condition
+			}
+			
+			result = hits.getSingle();
+			nodeCache.put(name,result);
 		}
 	
 		return result;

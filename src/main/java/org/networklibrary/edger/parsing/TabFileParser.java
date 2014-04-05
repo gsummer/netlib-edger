@@ -26,6 +26,12 @@ public class TabFileParser implements Parser{
 		
 	}
 
+	@Override
+	public boolean hasHeader() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
 //	public Collection<EdgeData> parse(String line) {
 //		List<EdgeData> res = null;
 //		

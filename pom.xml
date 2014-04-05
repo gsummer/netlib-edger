@@ -4,7 +4,7 @@
 
   <groupId>org.networklibrary</groupId>
   <artifactId>netlib-edger</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.1</version>
   <packaging>jar</packaging>
 
   <name>netlib-edger</name>
@@ -20,7 +20,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>nl.maastrichtuniversity.networklibrary.netlibprimer.App</mainClass>
+							<mainClass>org.networklibrary.edger.App</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
@@ -41,6 +41,13 @@
 	</build>
 
 	<dependencies>
+	
+		<dependency>
+			<groupId>org.networklibrary</groupId>
+			<artifactId>netlib-core</artifactId>
+			<version>0.1</version>
+		</dependency>
+	
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

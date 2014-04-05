@@ -42,7 +42,8 @@ public class EdgeImporter {
 
 		Parser p = makeParser();
 		
-		p.parseHeader(reader.readLine());
+		if(p.hasHeader())
+			p.parseHeader(reader.readLine());
 		
 		if(p != null){
 			while(reader.ready()){
@@ -62,6 +63,9 @@ public class EdgeImporter {
 		Parser p = null;
 
 		try {
+			System.out.println(getType());
+			System.out.println(parsers);
+
 			p = (Parser)parsers.get(getType()).newInstance();
 		} catch (InstantiationException e) {
 			System.err.println("error during parser setup: " + getType());
@@ -90,7 +94,7 @@ public class EdgeImporter {
 		StringBuilder buff = new StringBuilder();
 
 		for(Entry<String,Class> p : parsers.entrySet() ){
-			buff.append(p.getKey() + " = " + supported.get(p.getKey()));
+			buff.append("\t" + p.getKey() + " = " + supported.get(p.getKey()));
 			buff.append("\n");
 		}
 
