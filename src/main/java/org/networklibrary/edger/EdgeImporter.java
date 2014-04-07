@@ -7,11 +7,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.rest.graphdb.RestGraphDatabase;
+import org.networklibrary.core.config.ConfigManager;
 import org.networklibrary.core.parsing.Parser;
 import org.networklibrary.core.storage.StorageEngine;
 import org.networklibrary.core.types.EdgeData;
 import org.networklibrary.edger.parsing.StringLinkParser;
-import org.networklibrary.edger.storage.DefaultEdgeStorageEngine;
+import org.networklibrary.edger.storage.EdgeStorageEngine;
 
 public class EdgeImporter {
 	private static Map<String,Class> parsers = new HashMap<String,Class>();
@@ -24,18 +27,22 @@ public class EdgeImporter {
 	private String db;
 	private String type;
 	private String fileLoc;
+	private ConfigManager confMgr;
 
-	public EdgeImporter(String db, String type, String fileLoc) {
+	public EdgeImporter(String db, String type, String fileLoc,ConfigManager confMgr) {
 		this.db = db;
 		this.type = type;
 		this.fileLoc = fileLoc;
+		this.confMgr = confMgr;
 	}
 
 	public void execute() throws IOException {
 
-		StorageEngine<EdgeData> se = new DefaultEdgeStorageEngine(db);
-
 		System.out.println("connecting to db: " + getDb());
+		
+		GraphDatabaseService g = new RestGraphDatabase(db);
+		
+		StorageEngine<EdgeData> se = new EdgeStorageEngine(g,confMgr);
 
 		long start = System.nanoTime();
 		BufferedReader reader = new BufferedReader(new FileReader(getFileLocation()));
@@ -51,6 +58,7 @@ public class EdgeImporter {
 				se.storeAll(p.parse(line));
 			}
 		}
+		
 		reader.close();
 		long end = System.nanoTime();
 		long elapsed = end - start;
@@ -100,5 +108,11 @@ public class EdgeImporter {
 
 		return buff.toString();
 	}
+
+	protected ConfigManager getConfMgr() {
+		return confMgr;
+	}
+	
+	
 
 }

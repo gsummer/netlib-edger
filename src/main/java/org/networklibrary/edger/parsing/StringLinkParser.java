@@ -10,7 +10,7 @@ import java.util.Map;
 import org.networklibrary.core.parsing.Parser;
 import org.networklibrary.core.types.EdgeData;
 
-public class StringLinkParser implements Parser {
+public class StringLinkParser implements Parser<EdgeData> {
 
 	public static String EDGE_TYPE = "ppi";
 	public static String SOURCE_NAME = "string_link";
@@ -43,7 +43,6 @@ public class StringLinkParser implements Parser {
 			String to = values[1].replace("9606.","");
 			
 			res.add(new EdgeData(from,to,EDGE_TYPE,props));
-			//res.add(new EdgeData(to,from,EDGE_TYPE,props));
 			
 		}
 		
