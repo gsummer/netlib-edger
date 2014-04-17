@@ -7,7 +7,7 @@ import java.util.List;
 import org.networklibrary.core.parsing.Parser;
 import org.networklibrary.core.types.EdgeData;
 
-public class TabFileParser implements Parser{
+public class TabFileParser implements Parser<EdgeData>{
 
 	private List<String> columns = null;
 	
@@ -20,16 +20,14 @@ public class TabFileParser implements Parser{
 		return null;
 	}
 
-	@Override
-	public void parseHeader(String line) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public boolean hasHeader() {
 		// TODO Auto-generated method stub
-		return true;
+		return false;
+	}
+
+	public void parseHeader(String header) {
+		// TODO Auto-generated method stub
+		
 	}
 
 //	public Collection<EdgeData> parse(String line) {
