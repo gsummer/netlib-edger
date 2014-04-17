@@ -37,6 +37,14 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -45,7 +53,7 @@
 		<dependency>
 			<groupId>org.networklibrary</groupId>
 			<artifactId>netlib-core</artifactId>
-			<version>0.1</version>
+			<version>0.1.1</version>
 		</dependency>
 	
 		<dependency>

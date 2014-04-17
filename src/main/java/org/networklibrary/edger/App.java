@@ -2,6 +2,7 @@ package org.networklibrary.edger;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -17,8 +18,10 @@ import org.networklibrary.core.config.ConfigManager;
  * Hello world!
  *
  */
-public class App 
+public class App
 {
+	protected static final Logger log = Logger.getLogger(App.class.getName());
+	
     public static void main( String[] args )
     {
     	Options options = new Options();
@@ -62,11 +65,6 @@ public class App
             
             List<String> inputFiles = line.getArgList();
             
-            if(inputFiles.size() != 1){
-            	System.err.println("No or too many input files provided!");
-            	return;
-            }
-            
             // eeesh should move that to the ConfigManager ctor
             ConfigManager confMgr = null;
             if(config != null){
@@ -76,7 +74,7 @@ public class App
             	confMgr = new ConfigManager();
             }
             
-            EdgeImporter ei = new EdgeImporter(db,type,inputFiles.get(0),confMgr);
+            EdgeImporter ei = new EdgeImporter(db,type,inputFiles,confMgr);
             
             try {
 				ei.execute();
