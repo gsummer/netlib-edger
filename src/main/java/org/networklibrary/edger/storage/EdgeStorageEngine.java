@@ -3,6 +3,7 @@ package org.networklibrary.edger.storage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -14,6 +15,8 @@ import org.networklibrary.core.storage.MultiTxStrategy;
 import org.networklibrary.core.types.EdgeData;
 
 public class EdgeStorageEngine extends MultiTxStrategy<EdgeData> {
+	protected static final Logger log = Logger.getLogger(EdgeStorageEngine.class.getName());
+	
 	private final static String MATCH = "matchid";
 	private Map<String,Node> nodeCache = new HashMap<String,Node>();
 	
@@ -27,7 +30,8 @@ public class EdgeStorageEngine extends MultiTxStrategy<EdgeData> {
 		Node to = getNode(curr.getToID(),getGraph());
 
 		if(from == null || to == null){
-			// error condition
+			log.warning("failed to store edge: " + curr.toString());		
+			log.warning("from = " + from + " to = " + to);
 			return;
 		}
 
@@ -45,7 +49,7 @@ public class EdgeStorageEngine extends MultiTxStrategy<EdgeData> {
 			IndexHits<Node> hits = g.index().forNodes("matchable").get(MATCH, name);
 
 			if(hits.size() > 1){
-				// error condition
+				log.warning("query for name = " + name + " returned more than one hit. Defaulting to first.");
 			}
 
 			result = hits.getSingle();
