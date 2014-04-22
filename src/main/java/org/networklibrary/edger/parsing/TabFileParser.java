@@ -30,6 +30,18 @@ public class TabFileParser implements Parser<EdgeData>{
 		
 	}
 
+	@Override
+	public boolean hasExtraParameters() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void takeExtraParameters(List<String> extras) {
+		// TODO Auto-generated method stub
+		
+	}
+
 //	public Collection<EdgeData> parse(String line) {
 //		List<EdgeData> res = null;
 //		

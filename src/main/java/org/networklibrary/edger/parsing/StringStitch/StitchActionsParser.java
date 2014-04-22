@@ -67,4 +67,13 @@ public static String SOURCE_NAME = "stitch_actions";
 	public boolean hasHeader() {
 		return true;
 	}
+
+	@Override
+	public boolean hasExtraParameters() {
+		return false;
+	}
+
+	@Override
+	public void takeExtraParameters(List<String> extras) {
+	}
 }

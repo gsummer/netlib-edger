@@ -1,6 +1,7 @@
 package org.networklibrary.edger;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -29,11 +30,13 @@ public class App
     	Option dbop = OptionBuilder.withArgName("[URL]").hasArg().withDescription("Neo4j instance to prime").withLongOpt("target").withType(String.class).create("db");
     	Option typeop = OptionBuilder.withArgName("[TYPE]").hasArg().withDescription("Types available:").withType(String.class).create("t");
     	Option configOp = OptionBuilder.hasArg().withDescription("Alternative config file").withLongOpt("config").withType(String.class).create("c");
+    	Option extraOps = OptionBuilder.hasArgs().withDescription("Extra configuration parameters for the import").withType(String.class).create("x");
     	
     	options.addOption(help);
     	options.addOption(dbop);
     	options.addOption(typeop);
     	options.addOption(configOp);
+    	options.addOption(extraOps);
     	
     	
     	CommandLineParser parser = new GnuParser();
@@ -63,6 +66,11 @@ public class App
             	config = line.getOptionValue("c");
             }
             
+            List<String> extras = null;
+            if(line.hasOption("x")){
+            	extras = Arrays.asList(line.getOptionValues("x"));
+            }
+            
             List<String> inputFiles = line.getArgList();
             
             // eeesh should move that to the ConfigManager ctor
@@ -74,7 +82,7 @@ public class App
             	confMgr = new ConfigManager();
             }
             
-            EdgeImporter ei = new EdgeImporter(db,type,inputFiles,confMgr);
+            EdgeImporter ei = new EdgeImporter(db,type,inputFiles,confMgr,extras);
             
             try {
 				ei.execute();

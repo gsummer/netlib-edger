@@ -36,12 +36,14 @@ public class EdgeImporter {
 	private String type;
 	private List<String> fileLocs;
 	private ConfigManager confMgr;
+	private List<String> extras;
 
-	public EdgeImporter(String db, String type, List<String> fileLocs,ConfigManager confMgr) {
+	public EdgeImporter(String db, String type, List<String> fileLocs,ConfigManager confMgr, List<String> extras) {
 		this.db = db;
 		this.type = type;
 		this.fileLocs = fileLocs;
 		this.confMgr = confMgr;
+		this.extras = extras;
 	}
 
 	public void execute() throws IOException {
@@ -57,10 +59,13 @@ public class EdgeImporter {
 		for(String fileLoc : getFileLocations()){
 			BufferedReader reader = new BufferedReader(new FileReader(fileLoc));
 
-			Parser p = makeParser();
+			Parser<EdgeData> p = makeParser();
 
 			if(p.hasHeader())
 				p.parseHeader(reader.readLine());
+			
+			if(p.hasExtraParameters())
+				p.takeExtraParameters(extras);
 
 			if(p != null){
 				while(reader.ready()){

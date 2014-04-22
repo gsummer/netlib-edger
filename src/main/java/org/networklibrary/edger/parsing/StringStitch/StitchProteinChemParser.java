@@ -64,5 +64,14 @@ public class StitchProteinChemParser implements Parser<EdgeData> {
 	public boolean hasHeader() {
 		return true;
 	}
+
+	@Override
+	public boolean hasExtraParameters() {
+		return false;
+	}
+
+	@Override
+	public void takeExtraParameters(List<String> extras) {
+	}
 	
 }

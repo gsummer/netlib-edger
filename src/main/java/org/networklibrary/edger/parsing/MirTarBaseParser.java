@@ -1,4 +1,4 @@
-package org.networklibrary.edger.parsing.StringStitch;
+package org.networklibrary.edger.parsing;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,60 +10,56 @@ import java.util.Map;
 import org.networklibrary.core.parsing.Parser;
 import org.networklibrary.core.types.EdgeData;
 
-public class StitchChemChemParser implements Parser<EdgeData> {
-
-	public static String EDGE_TYPE = "cci";
-	public static String SOURCE_NAME = "stitch_chem_chem";
+public class MirTarBaseParser implements Parser<EdgeData> {
+	public final static String EDGE_TYPE = "miR-targeting";
+	public final static String SOURCE_NAME = "miRTarBase";
 	
 	private List<String> columns = null;
-	
-	public StitchChemChemParser(){
+		
+	@Override
+	public boolean hasHeader() {
+		return true;
 	}
-	
+
+	@Override
+	public void parseHeader(String header) {
+		columns = Arrays.asList(header.split("\\t",-1));
+	}
+
+	@Override
 	public Collection<EdgeData> parse(String line) {
 		List<EdgeData> res = null;
 		
 		if(!line.isEmpty()){
+		
 			res = new LinkedList<EdgeData>();
 			
 			String[] values = line.split("\\t",-1);
 			
-			if(values.length != columns.size()){
-				throw new IllegalArgumentException("number of elements in row does not match number of columns " + line);
-			}
+			String from = values[1];
+			
+			String to = values[4];
 			
 			Map<String,Object> props = new HashMap<String,Object>();
-			for(int i = 2; i < values.length; ++i){
+			for(int i = 7; i < values.length; ++i){
 				if(!values[i].isEmpty()){
 					props.put(columns.get(i), Integer.valueOf(values[i]));
 				}
 			}
 			props.put("data_source",SOURCE_NAME);
-			String from = values[0];
-			String to = values[1];
 			
-			res.add(new EdgeData(from,to,EDGE_TYPE,props));
-			
-		}
+			res.add(new EdgeData(from, to, EDGE_TYPE, props));
 		
+		}
 		return res;
-	}
-
-	public void parseHeader(String header) {
-		columns = Arrays.asList(header.split("\\t",-1));
-	}
-
-	public boolean hasHeader() {
-		return true;
 	}
 
 	@Override
 	public boolean hasExtraParameters() {
 		return false;
 	}
-	
-	@Override
-	public void takeExtraParameters(List<String> extras) {
-	}
 
+	@Override
+	public void takeExtraParameters(List<String> extras) {	
+	}
 }
