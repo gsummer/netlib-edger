@@ -11,7 +11,7 @@ import org.networklibrary.core.parsing.FileBasedParser;
 import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.types.EdgeData;
 
-public class TargetScanSites extends FileBasedParser<EdgeData> {
+public class TargetScanSitesParser extends FileBasedParser<EdgeData> {
 
 	public final static String EDGE_TYPE = "miR-targeting";
 	public final static String SOURCE_NAME = "TargetScanSites";

@@ -13,7 +13,14 @@ import org.networklibrary.core.parsing.Parser;
 import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.storage.StorageEngine;
 import org.networklibrary.core.types.EdgeData;
-import org.networklibrary.edger.parsing.StringStitch.StringActionParser;
+import org.networklibrary.edger.parsing.EncodeParser;
+import org.networklibrary.edger.parsing.MirTarBaseParser;
+import org.networklibrary.edger.parsing.TargetScanParser;
+import org.networklibrary.edger.parsing.TargetScanSitesParser;
+import org.networklibrary.edger.parsing.TfeParser;
+import org.networklibrary.edger.parsing.StringStitch.StitchActionsParser;
+import org.networklibrary.edger.parsing.StringStitch.StitchChemChemParser;
+import org.networklibrary.edger.parsing.StringStitch.StitchProteinChemParser;
 import org.networklibrary.edger.parsing.StringStitch.StringLinkParser;
 import org.networklibrary.edger.storage.EdgeStorageEngine;
 
@@ -24,12 +31,24 @@ public class EdgeImporter {
 	private static Map<String,Class> parsers = new HashMap<String,Class>();
 	private static Map<String,String> supported = new HashMap<String,String>();
 	static {
-		parsers.put("STRING_Links", StringLinkParser.class);
-		parsers.put("STRING_Actions", StringActionParser.class);
-		supported.put("STRING_Links", "STRING Links");
-		supported.put("STRING_Actions", "STRING Actions");
+		addParser("STRING_Links","STRING Links",StringLinkParser.class);
+		addParser("STRING_Actions","STRING Actions",StringLinkParser.class);
+		addParser("ENCODE","Encode Proximal or Distal",EncodeParser.class);
+		addParser("MIRTARBASE","miRTarBase miRNA targeting", MirTarBaseParser.class);
+		addParser("TARGETSCAN", "TargetScan (requires miR family file via -x)", TargetScanParser.class);
+		addParser("TARGETSCANSITES", "TargetScan Conserved Sites import",TargetScanSitesParser.class);
+		addParser("TFE","TFe import (requires a dummy filename) from the website", TfeParser.class);
+		addParser("STITCHACTIONS", "STITCH Actions", StitchActionsParser.class);
+		addParser("STITCHCHEMCHEM", "STITCH Chem Chem Interactions", StitchChemChemParser.class);
+		addParser("STITCHPROTCHEM", "STITCh Protein Chem Interactions",StitchProteinChemParser.class);
+		
 	}
 
+	private static void addParser(String cmd, String name, Class parser){
+		parsers.put(cmd,parser);
+		supported.put(cmd, name);
+	}
+	
 	private String db;
 	private String type;
 	private List<String> fileLocs;
