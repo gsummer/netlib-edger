@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.networklibrary.core.parsing.Parser;
+import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.types.EdgeData;
 
 public class TabFileParser implements Parser<EdgeData>{
@@ -40,6 +41,24 @@ public class TabFileParser implements Parser<EdgeData>{
 	public void takeExtraParameters(List<String> extras) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void setDataSource(String location) throws ParsingErrorException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean ready() throws ParsingErrorException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Collection<EdgeData> parse() throws ParsingErrorException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 //	public Collection<EdgeData> parse(String line) {

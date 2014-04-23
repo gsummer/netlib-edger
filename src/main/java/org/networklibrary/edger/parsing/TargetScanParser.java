@@ -12,10 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.networklibrary.core.parsing.Parser;
+import org.networklibrary.core.parsing.FileBasedParser;
+import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.types.EdgeData;
 
-public class TargetScanParser implements Parser<EdgeData> {
+public class TargetScanParser extends FileBasedParser<EdgeData> {
 	protected static final Logger log = Logger.getLogger(TargetScanParser.class.getName());
 
 	public final static String EDGE_TYPE = "miR-targeting";
@@ -23,20 +24,22 @@ public class TargetScanParser implements Parser<EdgeData> {
 	
 	private List<String> columns = null;
 	private Map<String,List<String>> miRFamilies = null;
-
+	
 	@Override
-	public boolean hasHeader() {
+	protected boolean hasHeader() {
 		return true;
 	}
 
 	@Override
-	public void parseHeader(String header) {
+	protected void parseHeader(String header) {
 		columns = Arrays.asList(header.split("\\t",-1));
 	}
 
 	@Override
-	public Collection<EdgeData> parse(String line) {
+	public Collection<EdgeData> parse() throws ParsingErrorException {
 
+		String line = readLine();
+		
 		List<EdgeData> res = null;
 		
 		if(!line.isEmpty()){
@@ -102,5 +105,4 @@ public class TargetScanParser implements Parser<EdgeData> {
 		}
 		
 	}
-
 }

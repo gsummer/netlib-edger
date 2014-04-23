@@ -1,6 +1,5 @@
 package org.networklibrary.edger.parsing;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -11,15 +10,13 @@ import org.networklibrary.core.parsing.FileBasedParser;
 import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.types.EdgeData;
 
-public class MirTarBaseParser extends FileBasedParser<EdgeData> {
-	public final static String EDGE_TYPE = "miR_targeting";
-	public final static String SOURCE_NAME = "miRTarBase";
+public class EncodeParser extends FileBasedParser<EdgeData> {
 	
-	private List<String> columns = null;
-
+	public final static String EDGE_TYPE = "TF_targeting";
+	public final static String SOURCE_NAME = "ENCODE";
+	
 	@Override
 	public Collection<EdgeData> parse() throws ParsingErrorException {
-		
 		String line = readLine();
 		List<EdgeData> res = null;
 		
@@ -29,16 +26,11 @@ public class MirTarBaseParser extends FileBasedParser<EdgeData> {
 			
 			String[] values = line.split("\\t",-1);
 			
-			String from = values[1];
-			
-			String to = values[4];
+			String from = values[0];
+			String to = values[2];
 			
 			Map<String,Object> props = new HashMap<String,Object>();
-			for(int i = 7; i < values.length; ++i){
-				if(!values[i].isEmpty()){
-					props.put(columns.get(i), Integer.valueOf(values[i]));
-				}
-			}
+			props.put("category", values[1]);
 			props.put("data_source",SOURCE_NAME);
 			
 			res.add(new EdgeData(from, to, EDGE_TYPE, props));
@@ -53,16 +45,16 @@ public class MirTarBaseParser extends FileBasedParser<EdgeData> {
 	}
 
 	@Override
-	public void takeExtraParameters(List<String> extras) {	
+	public void takeExtraParameters(List<String> extras) {
 	}
 
 	@Override
 	protected boolean hasHeader() {
-		return true;
+		return false;
 	}
-	
+
 	@Override
 	protected void parseHeader(String header) {
-		columns = Arrays.asList(header.split("\\t",-1));
 	}
+
 }

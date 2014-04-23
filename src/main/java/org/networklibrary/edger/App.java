@@ -1,6 +1,5 @@
 package org.networklibrary.edger;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
@@ -84,12 +83,7 @@ public class App
             
             EdgeImporter ei = new EdgeImporter(db,type,inputFiles,confMgr,extras);
             
-            try {
-				ei.execute();
-			} catch (IOException e) {
-				System.err.println("parsing failed" + e.getMessage());
-				e.printStackTrace();
-			}
+            ei.execute();
             
         }
         catch( ParseException exp ) {

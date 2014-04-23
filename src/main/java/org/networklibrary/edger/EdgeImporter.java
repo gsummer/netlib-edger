@@ -1,8 +1,5 @@
 package org.networklibrary.edger;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +10,7 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.rest.graphdb.RestGraphDatabase;
 import org.networklibrary.core.config.ConfigManager;
 import org.networklibrary.core.parsing.Parser;
+import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.storage.StorageEngine;
 import org.networklibrary.core.types.EdgeData;
 import org.networklibrary.edger.parsing.StringStitch.StringActionParser;
@@ -46,7 +44,7 @@ public class EdgeImporter {
 		this.extras = extras;
 	}
 
-	public void execute() throws IOException {
+	public void execute() {
 
 		log.info("connecting to db: " + getDb());
 
@@ -57,28 +55,29 @@ public class EdgeImporter {
 		long start = System.nanoTime();
 
 		for(String fileLoc : getFileLocations()){
-			BufferedReader reader = new BufferedReader(new FileReader(fileLoc));
+			try {
 
-			Parser<EdgeData> p = makeParser();
+				Parser<EdgeData> p = makeParser();
 
-			if(p.hasHeader())
-				p.parseHeader(reader.readLine());
-			
-			if(p.hasExtraParameters())
-				p.takeExtraParameters(extras);
+				if(p.hasExtraParameters())
+					p.takeExtraParameters(extras);
 
-			if(p != null){
-				while(reader.ready()){
-					String line = reader.readLine();
-					se.storeAll(p.parse(line));
+				p.setDataSource(fileLoc);
+
+				if(p != null){
+					while(p.ready()){
+						se.storeAll(p.parse());
+					}
 				}
-			}
 
-			se.finishUp();
-			reader.close();
-			long end = System.nanoTime();
-			long elapsed = end - start;
-			log.info("finished " + fileLoc + " in " + (elapsed/1000000000));
+				se.finishUp();
+
+				long end = System.nanoTime();
+				long elapsed = end - start;
+				log.info("finished " + fileLoc + " in " + (elapsed/1000000000));
+			} catch (ParsingErrorException e){
+				log.severe("error during parsing of location="+fileLoc+ ": " + e.getMessage());
+			}
 		}
 	}
 
@@ -123,7 +122,7 @@ public class EdgeImporter {
 	protected ConfigManager getConfMgr() {
 		return confMgr;
 	}
-	
+
 	protected Map<String,Class> getParsers(){
 		return parsers;
 	}

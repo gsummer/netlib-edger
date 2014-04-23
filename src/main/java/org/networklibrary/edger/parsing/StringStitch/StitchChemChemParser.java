@@ -7,10 +7,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.networklibrary.core.parsing.Parser;
+import org.networklibrary.core.parsing.FileBasedParser;
+import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.types.EdgeData;
 
-public class StitchChemChemParser implements Parser<EdgeData> {
+public class StitchChemChemParser extends FileBasedParser<EdgeData> {
 
 	public static String EDGE_TYPE = "cci";
 	public static String SOURCE_NAME = "stitch_chem_chem";
@@ -20,7 +21,8 @@ public class StitchChemChemParser implements Parser<EdgeData> {
 	public StitchChemChemParser(){
 	}
 	
-	public Collection<EdgeData> parse(String line) {
+	public Collection<EdgeData> parse() throws ParsingErrorException {
+		String line = readLine();
 		List<EdgeData> res = null;
 		
 		if(!line.isEmpty()){
@@ -49,11 +51,11 @@ public class StitchChemChemParser implements Parser<EdgeData> {
 		return res;
 	}
 
-	public void parseHeader(String header) {
+	protected void parseHeader(String header) {
 		columns = Arrays.asList(header.split("\\t",-1));
 	}
 
-	public boolean hasHeader() {
+	protected boolean hasHeader() {
 		return true;
 	}
 

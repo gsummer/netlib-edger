@@ -7,10 +7,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.networklibrary.core.parsing.Parser;
+import org.networklibrary.core.parsing.FileBasedParser;
+import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.types.EdgeData;
 
-public class TargetScanSites implements Parser<EdgeData> {
+public class TargetScanSites extends FileBasedParser<EdgeData> {
 
 	public final static String EDGE_TYPE = "miR-targeting";
 	public final static String SOURCE_NAME = "TargetScanSites";
@@ -18,17 +19,19 @@ public class TargetScanSites implements Parser<EdgeData> {
 	private List<String> columns = null;
 		
 	@Override
-	public boolean hasHeader() {
+	protected boolean hasHeader() {
 		return true;
 	}
 
 	@Override
-	public void parseHeader(String header) {
+	protected void parseHeader(String header) {
 		columns = Arrays.asList(header.split("\\t",-1));
 	}
 
 	@Override
-	public Collection<EdgeData> parse(String line) {
+	public Collection<EdgeData> parse() throws ParsingErrorException {
+		
+		String line = readLine();
 		List<EdgeData> res = null;
 		
 		if(!line.isEmpty()){
