@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.rest.graphdb.RestGraphDatabase;
+import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.networklibrary.core.config.ConfigManager;
 import org.networklibrary.core.parsing.Parser;
 import org.networklibrary.core.parsing.ParsingErrorException;
@@ -21,6 +21,7 @@ import org.networklibrary.edger.parsing.TfeParser;
 import org.networklibrary.edger.parsing.StringStitch.StitchActionsParser;
 import org.networklibrary.edger.parsing.StringStitch.StitchChemChemParser;
 import org.networklibrary.edger.parsing.StringStitch.StitchProteinChemParser;
+import org.networklibrary.edger.parsing.StringStitch.StringActionParser;
 import org.networklibrary.edger.parsing.StringStitch.StringLinkParser;
 import org.networklibrary.edger.storage.EdgeStorageEngine;
 
@@ -32,7 +33,7 @@ public class EdgeImporter {
 	private static Map<String,String> supported = new HashMap<String,String>();
 	static {
 		addParser("STRING_Links","STRING Links",StringLinkParser.class);
-		addParser("STRING_Actions","STRING Actions",StringLinkParser.class);
+		addParser("STRING_Actions","STRING Actions",StringActionParser.class);
 		addParser("ENCODE","Encode Proximal or Distal",EncodeParser.class);
 		addParser("MIRTARBASE","miRTarBase miRNA targeting", MirTarBaseParser.class);
 		addParser("TARGETSCAN", "TargetScan (requires miR family file via -x)", TargetScanParser.class);
@@ -67,7 +68,8 @@ public class EdgeImporter {
 
 		log.info("connecting to db: " + getDb());
 
-		GraphDatabaseService g = new RestGraphDatabase(db);
+//		GraphDatabaseService g = new RestGraphDatabase(db);
+		GraphDatabaseService g = new GraphDatabaseFactory().newEmbeddedDatabase(db);
 
 		StorageEngine<EdgeData> se = new EdgeStorageEngine(g,confMgr);
 
