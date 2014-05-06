@@ -147,7 +147,7 @@ public class TfeParser implements Parser<EdgeData> {
 					Map<String,Object> props = new HashMap<String,Object>();
 					for(int i = 2; i < values.length; ++i){
 						if(!values[i].isEmpty()){
-							props.put(columns.get(i), Integer.valueOf(values[i]));
+							props.put(columns.get(i), values[i]);
 						}
 					}
 					props.put("data_source",SOURCE_NAME);
