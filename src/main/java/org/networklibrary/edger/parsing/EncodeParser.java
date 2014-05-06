@@ -24,8 +24,10 @@ public class EncodeParser extends FileBasedParser<EdgeData> {
 		
 			res = new LinkedList<EdgeData>();
 			
-			String[] values = line.split("\\t",-1);
-			
+			String[] values = line.split(" ",-1); // proximal uses space
+			if(values.length == 1) // distal uses tabs
+				values = line.split("\t",-1); // encode sucks
+	
 			String from = values[0];
 			String to = values[2];
 			
