@@ -7,9 +7,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.networklibrary.core.parsing.FileBasedParser;
@@ -24,6 +26,9 @@ public class TargetScanParser extends FileBasedParser<EdgeData> {
 	
 	private List<String> columns = null;
 	private Map<String,List<String>> miRFamilies = null;
+	private Set<String> organisms = null;
+	
+	private String carryOver = null;
 	
 	@Override
 	protected boolean hasHeader() {
@@ -38,40 +43,78 @@ public class TargetScanParser extends FileBasedParser<EdgeData> {
 	@Override
 	public Collection<EdgeData> parse() throws ParsingErrorException {
 
-		String line = readLine();
-		
 		List<EdgeData> res = null;
 		
-		if(!line.isEmpty()){
+		Map<String,Object> props = new HashMap<String,Object>();
+		props.put("data_source",SOURCE_NAME);
 		
-			res = new LinkedList<EdgeData>();
-			
-			String[] values = line.split("\\t",-1);
-			
-			String froms = values[0];
-			
-			String to = values[1];
-			
-			Map<String,Object> props = new HashMap<String,Object>();
-			for(int i = 4; i < values.length; ++i){
-				if(!values[i].isEmpty()){
-					props.put(columns.get(i), Integer.valueOf(values[i]));
-				}
-			}
-			props.put("data_source",SOURCE_NAME);
-			
-			if(miRFamilies != null){
-				for(String from : miRFamilies.get(froms)){
-					res.add(new EdgeData(from, to, EDGE_TYPE, props));
-				}
-			} else {
-				res.add(new EdgeData(froms, to, EDGE_TYPE, props));
-			}
+		String fromFam = null;
+		String to = null;
 		
+		String currMirId = null;
+		String lineMirId = null;
+		
+		String line = null;
+		
+		do {
+			if(carryOver != null){
+				line = carryOver;
+				carryOver = null;
+			}
+			else {
+				line = readLine();
+			}
+	
+			if(line != null && !line.isEmpty()){
+				if(res == null){
+					res = new LinkedList<EdgeData>();
+				}
+
+				String[] values = line.split("\\t",-1);
+
+				lineMirId = values[0] + values[1];
+				
+				if(currMirId == null){
+					currMirId = lineMirId;
+				}
+				
+				if(!currMirId.equals(lineMirId)){
+					break;
+				}
+				
+
+				fromFam = values[0];
+				to = values[1];
+				
+//				for(int i = 4; i < values.length; ++i){
+//				if(!values[i].isEmpty()){
+//					props.put(columns.get(i), Integer.valueOf(values[i]));
+//				}
+//			}
+
+			}
+//			line = readLine();
+		} while(currMirId.equals(lineMirId) && line != null);
+
+
+		if(miRFamilies != null){
+			for(String from : miRFamilies.get(fromFam)){
+				res.add(new EdgeData(from, to, EDGE_TYPE, props));
+			}
+		} else {
+			res.add(new EdgeData(fromFam, to, EDGE_TYPE, props));
 		}
 		
-
+		if(line != null && !line.isEmpty()){
+			carryOver = line;
+		}
+		
 		return res;
+	}
+	
+	@Override
+	public boolean ready() throws ParsingErrorException {
+		return super.ready() || carryOver != null;
 	}
 
 	@Override
@@ -81,8 +124,16 @@ public class TargetScanParser extends FileBasedParser<EdgeData> {
 
 	@Override
 	public void takeExtraParameters(List<String> extras) {
+		log.info("processing extra parameters: " + extras.toString());
 		String famFile = extras.get(0);
 		log.info("using " + famFile + " as miRNA families file");
+		
+		if(extras.size() > 1){
+			organisms =  new HashSet<String>();
+			for(int i = 1; i < extras.size(); ++i){
+				organisms.add(extras.get(i));
+			}
+		}
 		
 		try {
 			miRFamilies = new HashMap<String,List<String>>();
@@ -91,6 +142,10 @@ public class TargetScanParser extends FileBasedParser<EdgeData> {
 			while(in.ready()){
 				String line = in.readLine();
 				String[] values = line.split("\t",-1);
+				
+				if(organisms != null && !organisms.contains(values[2])){
+					continue;
+				}
 				
 				if(!miRFamilies.containsKey(values[0])){
 					miRFamilies.put(values[0], new ArrayList<String>());
