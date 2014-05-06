@@ -26,7 +26,7 @@ public class StringActionParser extends FileBasedParser<EdgeData> {
 		if(!line.isEmpty()){
 			res = new LinkedList<EdgeData>();
 			
-			String[] values = line.split("\\s",-1);
+			String[] values = line.split("\\t",-1);
 			
 			if(values.length != columns.size()){
 				throw new IllegalArgumentException("number of elements in row does not match number of columns " + line);
