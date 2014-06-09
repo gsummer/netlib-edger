@@ -14,6 +14,7 @@ import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.storage.StorageEngine;
 import org.networklibrary.core.types.EdgeData;
 import org.networklibrary.edger.parsing.EncodeParser;
+import org.networklibrary.edger.parsing.MetaAnalysisParser;
 import org.networklibrary.edger.parsing.MirTarBaseParser;
 import org.networklibrary.edger.parsing.TargetScanParser;
 import org.networklibrary.edger.parsing.TargetScanSitesParser;
@@ -42,6 +43,7 @@ public class EdgeImporter {
 		addParser("STITCHACTIONS", "STITCH Actions", StitchActionsParser.class);
 		addParser("STITCHCHEMCHEM", "STITCH Chem Chem Interactions", StitchChemChemParser.class);
 		addParser("STITCHPROTCHEM", "STITCh Protein Chem Interactions",StitchProteinChemParser.class);
+		addParser("METAANALYSIS", "MetaAnalysis graph", MetaAnalysisParser.class);
 		
 	}
 
