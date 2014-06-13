@@ -17,11 +17,12 @@ import java.util.logging.Logger;
 import org.networklibrary.core.parsing.FileBasedParser;
 import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.types.EdgeData;
+import org.networklibrary.core.types.EdgeTypes;
 
 public class TargetScanParser extends FileBasedParser<EdgeData> {
 	protected static final Logger log = Logger.getLogger(TargetScanParser.class.getName());
 
-	public final static String EDGE_TYPE = "miR-targeting";
+	public final static String EDGE_TYPE = EdgeTypes.MIR_TARGETING;
 	public final static String SOURCE_NAME = "TargetScan";
 	
 	private List<String> columns = null;

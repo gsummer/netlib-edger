@@ -10,10 +10,11 @@ import java.util.Map;
 import org.networklibrary.core.parsing.FileBasedParser;
 import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.types.EdgeData;
+import org.networklibrary.core.types.EdgeTypes;
 
 public class TargetScanSitesParser extends FileBasedParser<EdgeData> {
 
-	public final static String EDGE_TYPE = "miR-targeting";
+	public final static String EDGE_TYPE = EdgeTypes.MIR_TARGETING;
 	public final static String SOURCE_NAME = "TargetScanSites";
 	
 	private List<String> columns = null;

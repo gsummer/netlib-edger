@@ -13,9 +13,10 @@ import java.util.Set;
 import org.networklibrary.core.parsing.FileBasedParser;
 import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.types.EdgeData;
+import org.networklibrary.core.types.EdgeTypes;
 
 public class MirTarBaseParser extends FileBasedParser<EdgeData> {
-	public final static String EDGE_TYPE = "miR_targeting";
+	public final static String EDGE_TYPE = EdgeTypes.MIR_TARGETING;
 	public final static String SOURCE_NAME = "miRTarBase";
 
 	private String carryOver = null;
