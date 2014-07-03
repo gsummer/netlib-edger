@@ -59,15 +59,15 @@ public class EdgeImporter {
 	private List<String> fileLocs;
 	private ConfigManager confMgr;
 	private List<String> extras;
-	private boolean noNew;
+	private boolean newNodes;
 
-	public EdgeImporter(String db, String type, List<String> fileLocs,ConfigManager confMgr, List<String> extras, boolean noNew) {
+	public EdgeImporter(String db, String type, List<String> fileLocs,ConfigManager confMgr, List<String> extras, boolean newNodes) {
 		this.db = db;
 		this.type = type;
 		this.fileLocs = fileLocs;
 		this.confMgr = confMgr;
 		this.extras = extras;
-		this.noNew = noNew;
+		this.newNodes = newNodes;
 	}
 
 	public void execute() {
@@ -77,7 +77,7 @@ public class EdgeImporter {
 //		GraphDatabaseService g = new RestGraphDatabase(db);
 		GraphDatabaseService g = new GraphDatabaseFactory().newEmbeddedDatabase(db);
 
-		StorageEngine<EdgeData> se = new EdgeStorageEngine(g,confMgr,noNew);
+		StorageEngine<EdgeData> se = new EdgeStorageEngine(g,confMgr,newNodes);
 
 		long start = System.nanoTime();
 
@@ -106,6 +106,7 @@ public class EdgeImporter {
 				log.severe("error during parsing of location="+fileLoc+ ": " + e.getMessage());
 			}
 		}
+		g.shutdown();
 	}
 
 	protected Parser<EdgeData> makeParser(){

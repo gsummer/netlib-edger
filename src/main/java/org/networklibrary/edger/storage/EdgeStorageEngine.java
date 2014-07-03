@@ -26,13 +26,13 @@ public class EdgeStorageEngine extends MultiTxStrategy<EdgeData> {
 	private Map<String,Set<Node>> nodeCache = new HashMap<String,Set<Node>>();
 
 	private int numEdges = 0;
-	protected boolean noNew = true;
+	protected boolean newNodes = true;
 	
 	private Index<Node> matchableIndex = null;
 
-	public EdgeStorageEngine(GraphDatabaseService graph, ConfigManager confMgr, boolean noNew) {
+	public EdgeStorageEngine(GraphDatabaseService graph, ConfigManager confMgr, boolean newNodes) {
 		super(graph, confMgr);
-		this.noNew = noNew;
+		this.newNodes = newNodes;
 		
 		try ( Transaction tx = graph.beginTx() ){
 			matchableIndex = graph.index().forNodes("matchable");
@@ -94,11 +94,11 @@ public class EdgeStorageEngine extends MultiTxStrategy<EdgeData> {
 			IndexHits<Node> hits = matchableIndex.get(MATCH, name);
 
 			if(hits.size() == 0){
-				log.warning("could not find a hit for name = " + name);
-				
-				if(!noNew){
+				if(newNodes){
 					Node newNode = createNewNode(name,g);
 					result.add(newNode);
+				} else {
+					log.warning("could not find a hit for name = " + name);
 				}
 
 			} else {

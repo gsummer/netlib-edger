@@ -31,7 +31,7 @@ public class App
     	Option configOp = OptionBuilder.hasArg().withDescription("Alternative config file").withLongOpt("config").withType(String.class).create("c");
     	Option extraOps = OptionBuilder.hasArg().withDescription("Extra configuration parameters for the import").withType(String.class).create("x");
     	
-    	Option nonewOps = new Option("no_new_nodes",false,"unknown primary ids will NOT create new nodes");
+    	Option newNodeOps = new Option("new_nodes",false,"unknown primary ids will create new nodes");
     	
     	options.addOption(help);
     	options.addOption(dbop);
@@ -39,7 +39,7 @@ public class App
     	options.addOption(configOp);
     	options.addOption(extraOps);
 
-    	options.addOption(nonewOps);
+    	options.addOption(newNodeOps);
     	
     	CommandLineParser parser = new GnuParser();
         try {
@@ -73,7 +73,7 @@ public class App
             	extras = Arrays.asList(line.getOptionValues("x"));
             }
             
-            boolean noNew = line.hasOption("no_new_nodes");
+            boolean newNodes = line.hasOption("new_nodes");
             
             List<String> inputFiles = line.getArgList();
             
@@ -86,7 +86,7 @@ public class App
             	confMgr = new ConfigManager();
             }
             
-            EdgeImporter ei = new EdgeImporter(db,type,inputFiles,confMgr,extras,noNew);
+            EdgeImporter ei = new EdgeImporter(db,type,inputFiles,confMgr,extras,newNodes);
             
             ei.execute();
             
