@@ -31,12 +31,15 @@ public class App
     	Option configOp = OptionBuilder.hasArg().withDescription("Alternative config file").withLongOpt("config").withType(String.class).create("c");
     	Option extraOps = OptionBuilder.hasArg().withDescription("Extra configuration parameters for the import").withType(String.class).create("x");
     	
+    	Option nonewOps = new Option("no_new_nodes",false,"unknown primary ids will NOT create new nodes");
+    	
     	options.addOption(help);
     	options.addOption(dbop);
     	options.addOption(typeop);
     	options.addOption(configOp);
     	options.addOption(extraOps);
-    	
+
+    	options.addOption(nonewOps);
     	
     	CommandLineParser parser = new GnuParser();
         try {
@@ -70,6 +73,8 @@ public class App
             	extras = Arrays.asList(line.getOptionValues("x"));
             }
             
+            boolean noNew = line.hasOption("no_new_nodes");
+            
             List<String> inputFiles = line.getArgList();
             
             // eeesh should move that to the ConfigManager ctor
@@ -81,7 +86,7 @@ public class App
             	confMgr = new ConfigManager();
             }
             
-            EdgeImporter ei = new EdgeImporter(db,type,inputFiles,confMgr,extras);
+            EdgeImporter ei = new EdgeImporter(db,type,inputFiles,confMgr,extras,noNew);
             
             ei.execute();
             

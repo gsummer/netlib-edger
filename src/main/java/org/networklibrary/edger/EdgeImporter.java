@@ -16,6 +16,7 @@ import org.networklibrary.core.types.EdgeData;
 import org.networklibrary.edger.parsing.EncodeParser;
 import org.networklibrary.edger.parsing.MetaAnalysisParser;
 import org.networklibrary.edger.parsing.MirTarBaseParser;
+import org.networklibrary.edger.parsing.TabFileParser;
 import org.networklibrary.edger.parsing.TargetScanParser;
 import org.networklibrary.edger.parsing.TargetScanSitesParser;
 import org.networklibrary.edger.parsing.TfeParser;
@@ -44,6 +45,7 @@ public class EdgeImporter {
 		addParser("STITCHCHEMCHEM", "STITCH Chem Chem Interactions", StitchChemChemParser.class);
 		addParser("STITCHPROTCHEM", "STITCh Protein Chem Interactions",StitchProteinChemParser.class);
 		addParser("METAANALYSIS", "MetaAnalysis graph", MetaAnalysisParser.class);
+		addParser("TAB","Tab files", TabFileParser.class);
 		
 	}
 
@@ -57,13 +59,15 @@ public class EdgeImporter {
 	private List<String> fileLocs;
 	private ConfigManager confMgr;
 	private List<String> extras;
+	private boolean noNew;
 
-	public EdgeImporter(String db, String type, List<String> fileLocs,ConfigManager confMgr, List<String> extras) {
+	public EdgeImporter(String db, String type, List<String> fileLocs,ConfigManager confMgr, List<String> extras, boolean noNew) {
 		this.db = db;
 		this.type = type;
 		this.fileLocs = fileLocs;
 		this.confMgr = confMgr;
 		this.extras = extras;
+		this.noNew = noNew;
 	}
 
 	public void execute() {
@@ -73,7 +77,7 @@ public class EdgeImporter {
 //		GraphDatabaseService g = new RestGraphDatabase(db);
 		GraphDatabaseService g = new GraphDatabaseFactory().newEmbeddedDatabase(db);
 
-		StorageEngine<EdgeData> se = new EdgeStorageEngine(g,confMgr);
+		StorageEngine<EdgeData> se = new EdgeStorageEngine(g,confMgr,noNew);
 
 		long start = System.nanoTime();
 

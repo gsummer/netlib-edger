@@ -1,6 +1,5 @@
 package org.networklibrary.edger.storage;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -12,6 +11,8 @@ import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexHits;
 import org.networklibrary.core.config.ConfigManager;
 import org.networklibrary.core.storage.MultiTxStrategy;
@@ -21,12 +22,22 @@ public class EdgeStorageEngine extends MultiTxStrategy<EdgeData> {
 	protected static final Logger log = Logger.getLogger(EdgeStorageEngine.class.getName());
 
 	private final static String MATCH = "matchid";
+	private final static String DEFAULT_NAME = "name";
 	private Map<String,Set<Node>> nodeCache = new HashMap<String,Set<Node>>();
-	
-	private int numEdges = 0;
 
-	public EdgeStorageEngine(GraphDatabaseService graph, ConfigManager confMgr) {
+	private int numEdges = 0;
+	protected boolean noNew = true;
+	
+	private Index<Node> matchableIndex = null;
+
+	public EdgeStorageEngine(GraphDatabaseService graph, ConfigManager confMgr, boolean noNew) {
 		super(graph, confMgr);
+		this.noNew = noNew;
+		
+		try ( Transaction tx = graph.beginTx() ){
+			matchableIndex = graph.index().forNodes("matchable");
+			tx.success();
+		}
 	}
 
 	@Override
@@ -53,21 +64,21 @@ public class EdgeStorageEngine extends MultiTxStrategy<EdgeData> {
 	}
 
 	private void addProperty(String key, Object prop, Relationship r) {
-		
-//		if(prop instanceof Collection<?>){
-//			Collection<?> collection = (Collection<?>)prop;
-//
-//			Object[] arr = ((Collection) prop).toArray();
-//
-//			if(arr[0] instanceof String){
-//				String[] values = (String[])arr;
-//				r.setProperty(key, values);
-//			}
-//		} else {
-			r.setProperty(key, prop);
-//		}
+
+		//		if(prop instanceof Collection<?>){
+		//			Collection<?> collection = (Collection<?>)prop;
+		//
+		//			Object[] arr = ((Collection) prop).toArray();
+		//
+		//			if(arr[0] instanceof String){
+		//				String[] values = (String[])arr;
+		//				r.setProperty(key, values);
+		//			}
+		//		} else {
+		r.setProperty(key, prop);
+		//		}
 	}
-	
+
 	@Override
 	public void finishUp() {
 		super.finishUp();
@@ -79,25 +90,39 @@ public class EdgeStorageEngine extends MultiTxStrategy<EdgeData> {
 
 		if(result == null){
 			result = new HashSet<Node>();
-			
-			IndexHits<Node> hits = g.index().forNodes("matchable").get(MATCH, name);
 
-			if(hits.size() > 1){
-				log.warning("query for name = " + name + " returned more than one hit.");
-			}
-			
+			IndexHits<Node> hits = matchableIndex.get(MATCH, name);
+
 			if(hits.size() == 0){
 				log.warning("could not find a hit for name = " + name);
-			}
+				
+				if(!noNew){
+					Node newNode = createNewNode(name,g);
+					result.add(newNode);
+				}
 
-			for(Node n : hits){
-				result.add(n);
+			} else {
+				if(hits.size() > 1){
+					log.warning("query for name = " + name + " returned more than one hit.");
+				}
+
+				for(Node n : hits){
+					result.add(n);
+				}	
 			}
 			hits.close();
 			nodeCache.put(name,result);
 		}
 
 		return result;
+	}
+
+	protected Node createNewNode(String name, GraphDatabaseService g) {
+		Node res = g.createNode();
+		res.setProperty(DEFAULT_NAME, name);
+		matchableIndex.add(res, MATCH, name);
+		
+		return res;
 	}
 
 }
