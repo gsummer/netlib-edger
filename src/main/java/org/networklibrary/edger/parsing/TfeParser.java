@@ -36,6 +36,8 @@ public class TfeParser implements Parser<EdgeData> {
 
 	private List<String> tfeIDs = null;
 	private Iterator<String> currTFeID = null;
+	private int tfeIDsDone = 0;
+	private int percentile10 = 0;
 	
 	@Override
 	public void setDataSource(String location) throws ParsingErrorException {
@@ -49,6 +51,9 @@ public class TfeParser implements Parser<EdgeData> {
 		if(tfeIDs == null){
 			throw new ParsingErrorException("could not retrieve any TFe IDs");
 		}
+		
+		percentile10 = tfeIDs.size() / 10;
+		log.info("having " + tfeIDs.size() + " tfeIds to deal with");
 		
 		currTFeID = tfeIDs.iterator();
 	}
@@ -66,6 +71,11 @@ public class TfeParser implements Parser<EdgeData> {
 		try {
 			String from = Request.Get(ENSG + tfeID).execute().handleResponse(new EnsgResponseHandler());
 			res = Request.Get(TARGETS + tfeID).execute().handleResponse(new TargetsResponseHandler(from));
+			++tfeIDsDone;
+			
+			if(tfeIDsDone % percentile10 == 0){
+				log.info("finished " + tfeIDsDone + " tfeids of " + tfeIDs.size());
+			}
 		} catch(IOException e){
 			throw new ParsingErrorException("failed to retrieve ensg and targets for " + tfeID,e);
 		}

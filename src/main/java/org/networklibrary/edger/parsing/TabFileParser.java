@@ -21,13 +21,15 @@ public class TabFileParser extends FileBasedParser<EdgeData>{
 	protected int typeCol = -1;
 	protected String edgeType = null;
 	protected String source = "unknown";
+	protected String sep = "\t";
+	protected int currI = 0;
 
 	public boolean hasHeader() {
 		return header;
 	}
 
 	public void parseHeader(String header) {
-		columns = Arrays.asList(header.split("\\t",-1));
+		columns = Arrays.asList(header.split(sep,-1));
 
 		if(typeCol != -1)
 			edgeType = columns.get(typeCol);
@@ -63,6 +65,10 @@ public class TabFileParser extends FileBasedParser<EdgeData>{
 			case "source":
 				this.source = values[1];
 				break;
+				
+			case "sep":
+				this.sep = values[1];
+				break;
 			}
 		}
 
@@ -82,6 +88,10 @@ public class TabFileParser extends FileBasedParser<EdgeData>{
 		List<EdgeData> res = null;
 
 		String line = readLine();
+		++currI;
+
+		if(currI % 10000 == 0)
+			System.out.println("at line: " + currI);
 
 		if(line != null && !line.isEmpty()){
 			res = new ArrayList<EdgeData>();
@@ -89,7 +99,7 @@ public class TabFileParser extends FileBasedParser<EdgeData>{
 			if(line.charAt(0) == '#')
 				return res;
 
-			String[] values = line.split("\\t",-1);
+			String[] values = line.split(sep,-1);
 
 			Map<String,Object> props = new HashMap<String,Object>();
 			props.put("data_source",source);
