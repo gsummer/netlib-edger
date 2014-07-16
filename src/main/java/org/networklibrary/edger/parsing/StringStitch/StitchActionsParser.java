@@ -53,7 +53,7 @@ public static String SOURCE_NAME = "stitch_actions";
 			}
 			
 			res.add(new EdgeData(from,to,values[2],props));
-			if("0".equals(values[4])){
+			if("0".equals(values[4]) && !from.equals(to)){
 				res.add(new EdgeData(to,from,values[2],props));
 			}
 			
