@@ -25,6 +25,7 @@ import org.networklibrary.edger.parsing.StringStitch.StitchChemChemParser;
 import org.networklibrary.edger.parsing.StringStitch.StitchProteinChemParser;
 import org.networklibrary.edger.parsing.StringStitch.StringActionParser;
 import org.networklibrary.edger.parsing.StringStitch.StringLinkParser;
+import org.networklibrary.edger.parsing.gpml.GpmlParser;
 import org.networklibrary.edger.storage.EdgeStorageEngine;
 
 public class EdgeImporter {
@@ -46,6 +47,7 @@ public class EdgeImporter {
 		addParser("STITCHPROTCHEM", "STITCh Protein Chem Interactions",StitchProteinChemParser.class);
 		addParser("METAANALYSIS", "MetaAnalysis graph", MetaAnalysisParser.class);
 		addParser("TAB","Tab files", TabFileParser.class);
+		addParser("WP", "WikiPathway GPML", GpmlParser.class);
 		
 	}
 
