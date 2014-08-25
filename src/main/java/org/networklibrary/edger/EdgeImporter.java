@@ -13,6 +13,7 @@ import org.networklibrary.core.parsing.Parser;
 import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.storage.StorageEngine;
 import org.networklibrary.core.types.EdgeData;
+import org.networklibrary.edger.parsing.DisgenetParser;
 import org.networklibrary.edger.parsing.EncodeParser;
 import org.networklibrary.edger.parsing.MetaAnalysisParser;
 import org.networklibrary.edger.parsing.MirTarBaseParser;
@@ -48,6 +49,7 @@ public class EdgeImporter {
 		addParser("METAANALYSIS", "MetaAnalysis graph", MetaAnalysisParser.class);
 		addParser("TAB","Tab files", TabFileParser.class);
 		addParser("WP", "WikiPathway GPML", GpmlParser.class);
+		addParser("DGN", "Disgenet Gene-Disease Associations",DisgenetParser.class);
 		
 	}
 
