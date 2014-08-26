@@ -57,11 +57,11 @@
 			<version>0.1.1</version>
 		</dependency>
 
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.pathvisio</groupId>
 			<artifactId>core</artifactId>
 			<version>2.0.11</version>
-		</dependency>
+		</dependency> -->
 
 		<dependency>
 			<groupId>junit</groupId>

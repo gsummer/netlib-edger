@@ -265,12 +265,17 @@ public class GpmlParser implements Parser<EdgeData> {
 	private Set<EdgeData> addInteraction(PathwayElement p1, PathwayElement p2, InteractionType interaction, boolean directed, String graphId) {
 		Set<EdgeData> edges = new HashSet<EdgeData>();
 
-		String from = p1.getGeneID();
-		String to = p2.getGeneID();
+		String from = p1.getElementID();
+		String to = p2.getElementID();
 
 		Map<String, Object> props = new HashMap<String,Object>();
-		props.put("graphid",graphId);
-		props.put("data_source", currPathway.getMappInfo().getDynamicProperty("pathwayId"));
+		if(graphId != null && !graphId.isEmpty())
+			props.put("graphid",graphId);
+		
+		String pathwayId = currPathway.getMappInfo().getDynamicProperty("pathwayId");
+		
+		if(pathwayId != null && !pathwayId.isEmpty())
+			props.put("data_source", currPathway.getMappInfo().getDynamicProperty("pathwayId"));
 
 		edges.add(new EdgeData(from, to, interaction.name(), props));
 		//		edges.add(new EdgeData(to, from, interaction.name(), props));
