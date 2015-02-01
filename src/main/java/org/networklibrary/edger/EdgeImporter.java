@@ -74,7 +74,7 @@ public class EdgeImporter {
 		this.newNodes = newNodes;
 	}
 
-	public void execute() {
+	public void execute() throws ParsingErrorException {
 
 		log.info("connecting to db: " + getDb());
 
@@ -87,7 +87,6 @@ public class EdgeImporter {
 
 		for(String fileLoc : getFileLocations()){
 			try {
-
 				Parser<EdgeData> p = makeParser();
 
 				if(p.hasExtraParameters())
@@ -108,6 +107,8 @@ public class EdgeImporter {
 				log.info("finished " + fileLoc + " in " + (elapsed/1000000000));
 			} catch (ParsingErrorException e){
 				log.severe("error during parsing of location="+fileLoc+ ": " + e.getMessage());
+				g.shutdown();
+				throw e;
 			}
 		}
 		g.shutdown();
