@@ -113,7 +113,7 @@ public class EdgeImporter {
 		g.shutdown();
 	}
 
-	protected Parser<EdgeData> makeParser(){
+	protected Parser<EdgeData> makeParser() throws ParsingErrorException {
 		Parser<EdgeData> p = null;
 
 		try {
@@ -121,8 +121,10 @@ public class EdgeImporter {
 			p = (Parser<EdgeData>)getParsers().get(getType()).newInstance();
 		} catch (InstantiationException e) {
 			log.severe("InstantiationException when creating parser for: " + getType() + ": " + e.getMessage());
+			throw new ParsingErrorException(e.getMessage());
 		} catch (IllegalAccessException e) {
 			log.severe("IllegalAccessException when creating parser for: " + getType() + ": " + e.getMessage());
+			throw new ParsingErrorException(e.getMessage());
 		}
 
 		return p;
