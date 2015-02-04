@@ -13,6 +13,7 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.networklibrary.core.config.ConfigManager;
+import org.networklibrary.core.parsing.ParsingErrorException;
 
 /**
  * Hello world!
@@ -94,6 +95,10 @@ public class App
         catch( ParseException exp ) {
             // oops, something went wrong
             System.err.println( "Parsing failed.  Reason: " + exp.getMessage() );
-        }
+            System.exit(-1);
+        } catch (ParsingErrorException e) {
+        	System.err.println( "Parsing failed.  Reason: " + e.getMessage() );
+        	System.exit(-2);
+		}
     }
 }
