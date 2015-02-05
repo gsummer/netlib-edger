@@ -47,9 +47,13 @@ public class StringActionParser extends FileBasedParser<EdgeData> {
 
 				Map<String,Object> props = new HashMap<String,Object>();
 
-				String oSource = values[7];
-				if(oSource.isEmpty() || oSource == null){
-					oSource = values[6];
+				//Only parse source attribute if actions.detailed available
+				if(values.length > 6) {
+					String oSource = values[7];
+					if(oSource.isEmpty() || oSource == null){
+						oSource = values[6];
+					}
+					props.put("orig_source", oSource);
 				}
 
 				if(!values[3].isEmpty()){
@@ -57,7 +61,6 @@ public class StringActionParser extends FileBasedParser<EdgeData> {
 				}
 
 				props.put("score", score);
-				props.put("orig_source", oSource);
 
 				props.put("data_source",SOURCE_NAME);
 				if(speciesCode == -1 || (values[0].startsWith(speciesCode + ".") && values[1].startsWith(speciesCode + "."))) {
