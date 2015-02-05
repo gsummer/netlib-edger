@@ -21,7 +21,8 @@ public class StringActionParser extends FileBasedParser<EdgeData> {
 	private List<String> columns = null;
 
 	private int cutoff = 0;
-
+	private int speciesCode = -1;
+	
 	public StringActionParser(){
 	}
 
@@ -59,12 +60,16 @@ public class StringActionParser extends FileBasedParser<EdgeData> {
 				props.put("orig_source", oSource);
 
 				props.put("data_source",SOURCE_NAME);
-				String from = values[0].replace("9606.","");
-				String to = values[1].replace("9606.","");
-
-				res.add(new EdgeData(from,to,values[2],props));
-				if("0".equals(values[4])){
-					res.add(new EdgeData(to,from,values[2],props));
+				if(speciesCode == -1 || (values[0].startsWith(speciesCode + ".") && values[1].startsWith(speciesCode + "."))) {
+					String from = values[0].replaceFirst("[0-9]+\\.","");
+					String to = values[1].replaceFirst("[0-9]+\\.","");
+					
+					res.add(new EdgeData(from,to,values[2],props));
+					if("0".equals(values[4])){
+						res.add(new EdgeData(to,from,values[2],props));
+					}
+				} else {
+					log.info("Skipping line, species doesn't match " + speciesCode);
 				}
 			}
 
@@ -88,18 +93,22 @@ public class StringActionParser extends FileBasedParser<EdgeData> {
 
 	@Override
 	public void takeExtraParameters(List<String> extras) {
-		log.info("processing extra parameters: " + extras.toString());
+		log.info("processing extra parameters: " + extras);
 
-		for(String extra : extras){
-			String values[] = extra.split("=",-1);
-
-			switch(values[0]) {
-			case "cutoff":
-				cutoff = Integer.parseInt(values[1]);
-				break;
+		if(extras != null) {
+			for(String extra : extras){
+				String values[] = extra.split("=",-1);
+	
+				switch(values[0]) {
+				case "cutoff":
+					cutoff = Integer.parseInt(values[1]);
+					break;
+				case "speciesCode":
+					speciesCode = Integer.parseInt(values[1]);
+					break;
+				}
 			}
 		}
-
 		log.info("using a cutoff of " + cutoff);
 	}
 
