@@ -76,15 +76,16 @@ public class StringLinkParser extends FileBasedParser<EdgeData> {
 	@Override
 	public void takeExtraParameters(List<String> extras) {
 
-		log.info("processing extra parameters: " + extras.toString());
-
-		for(String extra : extras){
-			String values[] = extra.split("=",-1);
-
-			switch(values[0]) {
-			case "cutoff":
-				cutoff = Integer.parseInt(values[1]);
-				break;
+		log.info("processing extra parameters: " + extras);
+		if(extras != null) {
+			for(String extra : extras){
+				String values[] = extra.split("=",-1);
+	
+				switch(values[0]) {
+				case "cutoff":
+					cutoff = Integer.parseInt(values[1]);
+					break;
+				}
 			}
 		}
 

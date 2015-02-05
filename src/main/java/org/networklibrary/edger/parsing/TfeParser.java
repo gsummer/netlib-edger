@@ -120,15 +120,17 @@ public class TfeParser implements Parser<EdgeData> {
 
 	@Override
 	public void takeExtraParameters(List<String> extras) {
-		log.info("processing extra parameters: " + extras.toString());
+		log.info("processing extra parameters: " + extras);
 
-		for(String extra : extras){
-			String values[] = extra.split("=",-1);
-
-			switch(values[0]) {
-			case "cachepath":
-				cachePath = values[1];
-				break;
+		if(extras != null) {
+			for(String extra : extras){
+				String values[] = extra.split("=",-1);
+	
+				switch(values[0]) {
+				case "cachepath":
+					cachePath = values[1];
+					break;
+				}
 			}
 		}
 
