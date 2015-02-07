@@ -53,7 +53,7 @@ public class EdgeImporter {
 		
 	}
 
-	private static void addParser(String cmd, String name, Class parser){
+	public static void addParser(String cmd, String name, Class parser){
 		parsers.put(cmd,parser);
 		supported.put(cmd, name);
 	}
