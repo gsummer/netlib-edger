@@ -274,8 +274,10 @@ public class GpmlParser implements Parser<EdgeData> {
 		
 		String pathwayId = currPathway.getMappInfo().getDynamicProperty("pathwayId");
 		
+		props.put("data_source", "gpml");
+		
 		if(pathwayId != null && !pathwayId.isEmpty())
-			props.put("data_source", currPathway.getMappInfo().getDynamicProperty("pathwayId"));
+			props.put("data_source_pathway", currPathway.getMappInfo().getDynamicProperty("pathwayId"));
 
 		edges.add(new EdgeData(from, to, interaction.name(), props));
 		//		edges.add(new EdgeData(to, from, interaction.name(), props));
