@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import org.networklibrary.core.parsing.FileBasedParser;
 import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.types.EdgeData;
+import org.networklibrary.core.types.EdgeTypes;
 
 public class StringActionParser extends FileBasedParser<EdgeData> {
 
@@ -23,7 +24,16 @@ public class StringActionParser extends FileBasedParser<EdgeData> {
 	private int cutoff = 0;
 	private int speciesCode = -1;
 	
+	private Map<String, String> edgeTypes;
+	
 	public StringActionParser(){
+		edgeTypes = new HashMap<String, String>();
+		edgeTypes.put("binding", EdgeTypes.INTERACTS_WITH);
+		edgeTypes.put("ptmod", EdgeTypes.INTERACTS_WITH);
+		edgeTypes.put("activation", EdgeTypes.INTERACTS_WITH);
+		edgeTypes.put("expression", EdgeTypes.INTERACTS_WITH);
+		edgeTypes.put("reaction", EdgeTypes.INTERACTS_WITH);
+		edgeTypes.put("catalysis", EdgeTypes.CATALYZES);
 	}
 
 	public Collection<EdgeData> parse() throws ParsingErrorException {
@@ -61,15 +71,19 @@ public class StringActionParser extends FileBasedParser<EdgeData> {
 				}
 
 				props.put("score", score);
-
+				
+				props.put("mode", values[2]);
+				
+				String type = getEdgeType(values[2]);
+				
 				props.put("data_source",SOURCE_NAME);
 				if(speciesCode == -1 || (values[0].startsWith(speciesCode + ".") && values[1].startsWith(speciesCode + "."))) {
 					String from = values[0].replaceFirst("[0-9]+\\.","");
 					String to = values[1].replaceFirst("[0-9]+\\.","");
 					
-					res.add(new EdgeData(from,to,values[2],props));
+					res.add(new EdgeData(from,to,type,props));
 					if("0".equals(values[4])){
-						res.add(new EdgeData(to,from,values[2],props));
+						res.add(new EdgeData(to,from,type,props));
 					}
 				} else {
 					log.info("Skipping line, species doesn't match " + speciesCode);
@@ -81,6 +95,14 @@ public class StringActionParser extends FileBasedParser<EdgeData> {
 		return res;
 	}
 
+	private String getEdgeType(String stringType) {
+		String type = edgeTypes.get(stringType);
+		if(type == null) {
+			type = EdgeTypes.INTERACTS_WITH;
+		}
+		return type;
+	}
+	
 	protected void parseHeader(String header) {
 		columns = Arrays.asList(header.split("\\t",-1));
 	}
