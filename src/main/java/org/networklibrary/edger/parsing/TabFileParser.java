@@ -109,10 +109,15 @@ public class TabFileParser extends FileBasedParser<EdgeData>{
 					continue;
 
 				String colname = null;
-				if(header)
+				if(header) {
+					if(i >= columns.size()) {
+						log.warning("More columns in line than in header: " + line);
+						continue;
+					}
 					colname = columns.get(i);
-				else 
+				} else {
 					colname = "col" + i;
+				}
 
 				if(isNumeric(values[i]))
 					props.put(colname, Double.parseDouble(values[i]));
@@ -120,7 +125,11 @@ public class TabFileParser extends FileBasedParser<EdgeData>{
 					props.put(colname, values[i]);
 
 			}
-			res.add(new EdgeData(values[0],values[1],edgeType,props));
+			String type = edgeType;
+			if(typeCol > -1) {
+				type = values[typeCol];
+			}
+			res.add(new EdgeData(values[0],values[1],type,props));
 
 		}
 

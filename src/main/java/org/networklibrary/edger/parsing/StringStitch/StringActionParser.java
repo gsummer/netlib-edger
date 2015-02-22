@@ -32,7 +32,7 @@ public class StringActionParser extends FileBasedParser<EdgeData> {
 		edgeTypes.put("ptmod", EdgeTypes.INTERACTS_WITH);
 		edgeTypes.put("activation", EdgeTypes.INTERACTS_WITH);
 		edgeTypes.put("expression", EdgeTypes.INTERACTS_WITH);
-		edgeTypes.put("reaction", EdgeTypes.INTERACTS_WITH);
+		edgeTypes.put("reaction", EdgeTypes.IN_SAME_REACTION);
 		edgeTypes.put("catalysis", EdgeTypes.CATALYZES);
 	}
 
