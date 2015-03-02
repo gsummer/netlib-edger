@@ -94,9 +94,11 @@ public class App
         }
         catch( ParseException exp ) {
             // oops, something went wrong
+        	exp.printStackTrace();
             System.err.println( "Parsing failed.  Reason: " + exp.getMessage() );
             System.exit(-1);
         } catch (ParsingErrorException e) {
+        	e.printStackTrace();
         	System.err.println( "Parsing failed.  Reason: " + e.getMessage() );
         	System.exit(-2);
 		}
