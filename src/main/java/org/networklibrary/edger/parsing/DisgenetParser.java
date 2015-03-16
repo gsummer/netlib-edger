@@ -11,12 +11,12 @@ import java.util.logging.Logger;
 import org.networklibrary.core.parsing.FileBasedParser;
 import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.types.EdgeData;
+import org.networklibrary.core.types.EdgeTypes;
 
 public class DisgenetParser extends FileBasedParser<EdgeData> {
 
 	protected static final Logger log = Logger.getLogger(DisgenetParser.class.getName());
 
-	public static String EDGE_TYPE = "dgi";
 	public static String SOURCE_NAME = "disgenet";
 
 	private List<String> columns = null;
@@ -49,10 +49,9 @@ public class DisgenetParser extends FileBasedParser<EdgeData> {
 				props.put(columns.get(7), values[7]);
 				String[] sources = values[8].split(", ",-1);
 				props.put(columns.get(8), sources);
-
 				props.put("data_source",SOURCE_NAME);
 
-				res.add(new EdgeData(values[1],values[3],values[7],props));
+				res.add(new EdgeData(values[1],values[3],getEdgeType(values[7]),props));
 			}
 
 		}
@@ -60,6 +59,24 @@ public class DisgenetParser extends FileBasedParser<EdgeData> {
 		return res;
 	}
 
+	private String getEdgeType(String disgenetType) {
+		switch(disgenetType) {
+		case "Biomarker":
+			return EdgeTypes.BIOMARKER_OF;
+		case "GeneticVariation":
+			return EdgeTypes.GENETIC_VARIATION_FOR;
+		case "PostTranslationalModification":
+			return EdgeTypes.POST_TRANSLATIONAL_MODIFICATION_IN;
+		case "AlteredExpression":
+			return EdgeTypes.ALTERED_EXPRESSION_IN;
+		case "Therapeutic":
+			return EdgeTypes.THERAPEUTIC_ROLE_IN;
+		}
+		
+		log.warning("Edge type for " + disgenetType + " not found!");
+		return disgenetType;
+	}
+	
 	@Override
 	public boolean hasExtraParameters() {
 		return true;

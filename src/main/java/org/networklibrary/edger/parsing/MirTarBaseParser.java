@@ -16,7 +16,7 @@ import org.networklibrary.core.types.EdgeData;
 import org.networklibrary.core.types.EdgeTypes;
 
 public class MirTarBaseParser extends FileBasedParser<EdgeData> {
-	public final static String EDGE_TYPE = EdgeTypes.MIR_TARGETING;
+	public final static String EDGE_TYPE = EdgeTypes.MIRNA_TARGETS;
 	public final static String SOURCE_NAME = "miRTarBase";
 
 	private String carryOver = null;

@@ -22,7 +22,7 @@ import org.networklibrary.core.types.EdgeTypes;
 public class TargetScanParser extends FileBasedParser<EdgeData> {
 	protected static final Logger log = Logger.getLogger(TargetScanParser.class.getName());
 
-	public final static String EDGE_TYPE = EdgeTypes.MIR_TARGETING;
+	public final static String EDGE_TYPE = EdgeTypes.MIRNA_TARGETS;
 	public final static String SOURCE_NAME = "TargetScan";
 	
 	private List<String> columns = null;

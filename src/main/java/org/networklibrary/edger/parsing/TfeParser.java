@@ -25,12 +25,12 @@ import org.apache.http.client.fluent.Request;
 import org.networklibrary.core.parsing.Parser;
 import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.types.EdgeData;
+import org.networklibrary.core.types.EdgeTypes;
 
 public class TfeParser implements Parser<EdgeData> {
 
 	protected static final Logger log = Logger.getLogger(TfeParser.class.getName());
 
-	public final static String EDGE_TYPE = "TF_targeting";
 	public final static String SOURCE_NAME = "TFe";
 	
 	static final String TFe_URL = "http://cisreg.cmmt.ubc.ca/cgi-bin/tfe/api.pl?";
@@ -120,15 +120,17 @@ public class TfeParser implements Parser<EdgeData> {
 
 	@Override
 	public void takeExtraParameters(List<String> extras) {
-		log.info("processing extra parameters: " + extras.toString());
+		log.info("processing extra parameters: " + extras);
 
-		for(String extra : extras){
-			String values[] = extra.split("=",-1);
-
-			switch(values[0]) {
-			case "cachepath":
-				cachePath = values[1];
-				break;
+		if(extras != null) {
+			for(String extra : extras){
+				String values[] = extra.split("=",-1);
+	
+				switch(values[0]) {
+				case "cachepath":
+					cachePath = values[1];
+					break;
+				}
 			}
 		}
 
@@ -166,7 +168,15 @@ public class TfeParser implements Parser<EdgeData> {
 			}
 			props.put("data_source",SOURCE_NAME);
 			
-			res.add(new EdgeData(from, to, EDGE_TYPE, props));
+			String type = EdgeTypes.REGULATES_TRANSCRIPTION;
+			if("UP-REGULATION".equals(values[columns.indexOf("Regulatory effect on target")])) {
+				type = EdgeTypes.ACTIVATES_TRANSCRIPTION;
+			}
+			if("DOWN-REGULATION".equals(values[columns.indexOf("Regulatory effect on target")])) {
+				type = EdgeTypes.INHIBITS_TRANSCRIPTION;
+			}
+			
+			res.add(new EdgeData(from, to, type, props));
 		}
 		
 		if(cache != null) cache.close();

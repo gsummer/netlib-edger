@@ -14,7 +14,7 @@ import org.networklibrary.core.types.EdgeTypes;
 
 public class TargetScanSitesParser extends FileBasedParser<EdgeData> {
 
-	public final static String EDGE_TYPE = EdgeTypes.MIR_TARGETING;
+	public final static String EDGE_TYPE = EdgeTypes.MIRNA_TARGETS;
 	public final static String SOURCE_NAME = "TargetScanSites";
 	
 	private List<String> columns = null;
