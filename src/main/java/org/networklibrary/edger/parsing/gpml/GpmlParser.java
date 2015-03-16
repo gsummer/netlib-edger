@@ -31,7 +31,7 @@ public class GpmlParser implements Parser<EdgeData> {
 
 	private Collection<InteractionType> ignoreInteractions = new HashSet<InteractionType>();
 
-
+	
 	@Override
 	public void setDataSource(String location) throws ParsingErrorException {
 		try {
