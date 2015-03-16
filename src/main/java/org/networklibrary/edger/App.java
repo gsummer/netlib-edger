@@ -29,6 +29,7 @@ public class App
     	Option help = OptionBuilder.withDescription("Help message").create("help");
     	Option dbop = OptionBuilder.withArgName("[URL]").hasArg().withDescription("Neo4j instance to prime").withLongOpt("target").withType(String.class).create("db");
     	Option typeop = OptionBuilder.withArgName("[TYPE]").hasArg().withDescription("Types available:").withType(String.class).create("t");
+    	Option parserClassesOp = OptionBuilder.withArgName("[CLASS:TYPE]").hasArg().withDescription("Additional parser classes to load (e.g. org.my.EdgeParser:MYPARSER").withLongOpt("parsers").withType(String.class).create("p");
     	Option configOp = OptionBuilder.hasArg().withDescription("Alternative config file").withLongOpt("config").withType(String.class).create("c");
     	Option extraOps = OptionBuilder.hasArg().withDescription("Extra configuration parameters for the import").withType(String.class).create("x");
     	
@@ -39,7 +40,7 @@ public class App
     	options.addOption(typeop);
     	options.addOption(configOp);
     	options.addOption(extraOps);
-
+    	options.addOption(parserClassesOp);
     	options.addOption(newNodeOps);
     	
     	CommandLineParser parser = new GnuParser();
@@ -47,6 +48,17 @@ public class App
             
             CommandLine line = parser.parse( options, args );
             
+            if(line.hasOption("p")) {
+            	String[] classes = line.getOptionValue("p").split("\\s+");
+            	for(String cltype : classes) {
+            		String[] values = cltype.split(":", 2);
+            		try {
+            			EdgeImporter.addParser(values[1], "", Class.forName(values[0]));
+            		} catch(ClassNotFoundException e) {
+            			throw new ParsingErrorException("Class for custom parser not found", e);
+            		}
+            	}
+            }
             if(line.hasOption("help") || args.length == 0){
             	HelpFormatter formatter = new HelpFormatter();
             	formatter.printHelp( "netlib-edger [OPTIONS] [FILE]", options );

@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.networklibrary.core.parsing.Parser;
 import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.types.EdgeData;
+import org.networklibrary.core.types.EdgeTypes;
 import org.pathvisio.core.model.ConverterException;
 import org.pathvisio.core.model.DataNodeType;
 import org.pathvisio.core.model.GroupStyle;
@@ -30,7 +31,28 @@ public class GpmlParser implements Parser<EdgeData> {
 	private Iterator<PathwayElement> peIter = null;
 
 	private Collection<InteractionType> ignoreInteractions = new HashSet<InteractionType>();
-
+	private Map<InteractionType, String> edgeTypes;
+	
+	public GpmlParser() {
+		edgeTypes = new HashMap<InteractionType, String>();
+		edgeTypes.put(InteractionType.BINDING, EdgeTypes.INTERACTS_WITH);
+		edgeTypes.put(InteractionType.CLEAVAGE, EdgeTypes.MODIFIES_PROTEIN);
+		edgeTypes.put(InteractionType.CO_CONTROL, EdgeTypes.CO_CONTROLS_INTERACTION);
+		edgeTypes.put(InteractionType.COMPOSED_OF, EdgeTypes.IN_SAME_COMPONENT);
+		edgeTypes.put(InteractionType.IN_GROUP, EdgeTypes.IN_GROUP);
+		edgeTypes.put(InteractionType.IN_SAME_COMPONENT, EdgeTypes.IN_SAME_COMPONENT);
+		edgeTypes.put(InteractionType.INHIBITION, EdgeTypes.INHIBITS);
+		edgeTypes.put(InteractionType.INTERACTS_WITH, EdgeTypes.INTERACTS_WITH);
+		edgeTypes.put(InteractionType.MEDIATES_INTERACTION, EdgeTypes.MEDIATES_INTERACTION);
+		edgeTypes.put(InteractionType.METABOLIC_CATALYSIS, EdgeTypes.CATALYZES);
+		edgeTypes.put(InteractionType.NEGATIVE_CORRELATION, EdgeTypes.CORRELATES_NEGATIVE);
+		edgeTypes.put(InteractionType.POSITIVE_CORRELATION, EdgeTypes.CORRELATES_POSITIVE);
+		edgeTypes.put(InteractionType.REACTS_WITH, EdgeTypes.CO_CONTROLS_INTERACTION);
+		edgeTypes.put(InteractionType.RECEPTOR_BINDING, EdgeTypes.BINDS_RECEPTOR);
+		edgeTypes.put(InteractionType.STATE_CHANGE, EdgeTypes.MODIFIES_PROTEIN);
+		edgeTypes.put(InteractionType.STIMULATION, EdgeTypes.ACTIVATES);
+		edgeTypes.put(InteractionType.TRANSPORT, EdgeTypes.TRANSPORTS);
+	}
 
 	@Override
 	public void setDataSource(String location) throws ParsingErrorException {
@@ -261,6 +283,14 @@ public class GpmlParser implements Parser<EdgeData> {
 		return addedEdges;
 	}
 
+	private String getEdgeType(InteractionType interactionType) {
+		String type = edgeTypes.get(interactionType);
+		if(type == null) {
+			type = interactionType.toString();
+		}
+		return type;
+	}
+	
 	// ah directionality... the old problem how to treat this properly?
 	private Set<EdgeData> addInteraction(PathwayElement p1, PathwayElement p2, InteractionType interaction, boolean directed, String graphId) {
 		Set<EdgeData> edges = new HashSet<EdgeData>();
@@ -274,10 +304,13 @@ public class GpmlParser implements Parser<EdgeData> {
 		
 		String pathwayId = currPathway.getMappInfo().getDynamicProperty("pathwayId");
 		
+		props.put("data_source", "gpml");
+		
 		if(pathwayId != null && !pathwayId.isEmpty())
-			props.put("data_source", currPathway.getMappInfo().getDynamicProperty("pathwayId"));
+			props.put("data_source_pathway", currPathway.getMappInfo().getDynamicProperty("pathwayId"));
 
-		edges.add(new EdgeData(from, to, interaction.name(), props));
+		props.put("original_type", interaction.name());
+		edges.add(new EdgeData(from, to, getEdgeType(interaction), props));
 		//		edges.add(new EdgeData(to, from, interaction.name(), props));
 
 		return edges;

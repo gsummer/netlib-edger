@@ -9,10 +9,11 @@ import java.util.Map;
 import org.networklibrary.core.parsing.FileBasedParser;
 import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.types.EdgeData;
+import org.networklibrary.core.types.EdgeTypes;
 
 public class EncodeParser extends FileBasedParser<EdgeData> {
 	
-	public final static String EDGE_TYPE = "TF_targeting";
+	public final static String EDGE_TYPE = EdgeTypes.REGULATES_TRANSCRIPTION;
 	public final static String SOURCE_NAME = "ENCODE";
 	
 	@Override
