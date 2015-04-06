@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 ## Download PathVisio
 cd /tmp
