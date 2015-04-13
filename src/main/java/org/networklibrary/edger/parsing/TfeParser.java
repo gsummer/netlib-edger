@@ -129,6 +129,7 @@ public class TfeParser implements Parser<EdgeData> {
 				switch(values[0]) {
 				case "cachepath":
 					cachePath = values[1];
+					new File(cachePath).mkdirs();
 					break;
 				}
 			}

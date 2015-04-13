@@ -138,6 +138,6 @@ public class TabFileParser extends FileBasedParser<EdgeData>{
 
 	public static boolean isNumeric(String str)
 	{
-		return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
+		return str.matches("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");  //match a number with optional '-' and decimal and scientific notation.
 	}
 }
