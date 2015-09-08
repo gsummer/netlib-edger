@@ -49,8 +49,8 @@ public class StringLinkParser extends FileBasedParser<EdgeData> {
 					}
 				}
 				props.put("data_source",SOURCE_NAME);
-				String from = values[0].replace("9606.","");
-				String to = values[1].replace("9606.","");
+				String from = values[0].replaceFirst("[0-9]+\\.", "");
+				String to = values[1].replaceFirst("[0-9]+\\.", "");
 
 				// TODO really? only one?
 				res.add(new EdgeData(from,to,EDGE_TYPE,props));

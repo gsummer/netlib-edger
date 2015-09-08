@@ -22,6 +22,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.fluent.Request;
+import org.networklibrary.core.config.Dictionary;
 import org.networklibrary.core.parsing.Parser;
 import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.types.EdgeData;
@@ -43,6 +44,7 @@ public class TfeParser implements Parser<EdgeData> {
 	private int tfeIDsDone = 0;
 	private int percentile10 = 0;
 	private String cachePath = null;
+	private Dictionary dictionary = null;
 	
 	@Override
 	public void setDataSource(String location) throws ParsingErrorException {
@@ -240,5 +242,10 @@ public class TfeParser implements Parser<EdgeData> {
 			}
 		}
 
+	}
+
+	@Override
+	public void setDictionary(Dictionary dictionary) {
+		this.dictionary = dictionary;		
 	}
 }

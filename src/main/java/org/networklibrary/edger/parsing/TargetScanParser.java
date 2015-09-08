@@ -24,13 +24,13 @@ public class TargetScanParser extends FileBasedParser<EdgeData> {
 
 	public final static String EDGE_TYPE = EdgeTypes.MIRNA_TARGETS;
 	public final static String SOURCE_NAME = "TargetScan";
-	
+
 	private List<String> columns = null;
 	private Map<String,List<String>> miRFamilies = null;
 	private Set<String> organisms = null;
-	
+
 	private String carryOver = null;
-	
+
 	@Override
 	protected boolean hasHeader() {
 		return true;
@@ -45,18 +45,18 @@ public class TargetScanParser extends FileBasedParser<EdgeData> {
 	public Collection<EdgeData> parse() throws ParsingErrorException {
 
 		List<EdgeData> res = null;
-		
+
 		Map<String,Object> props = new HashMap<String,Object>();
 		props.put("data_source",SOURCE_NAME);
-		
+
 		String fromFam = null;
 		String to = null;
-		
+
 		String currMirId = null;
 		String lineMirId = null;
-		
+
 		String line = null;
-		
+
 		do {
 			if(carryOver != null){
 				line = carryOver;
@@ -65,7 +65,7 @@ public class TargetScanParser extends FileBasedParser<EdgeData> {
 			else {
 				line = readLine();
 			}
-	
+
 			if(line != null && !line.isEmpty()){
 				if(res == null){
 					res = new LinkedList<EdgeData>();
@@ -74,45 +74,47 @@ public class TargetScanParser extends FileBasedParser<EdgeData> {
 				String[] values = line.split("\\t",-1);
 
 				lineMirId = values[0] + values[1];
-				
+
 				if(currMirId == null){
 					currMirId = lineMirId;
 				}
-				
+
 				if(!currMirId.equals(lineMirId)){
 					break;
 				}
-				
+
 
 				fromFam = values[0];
 				to = values[1];
-				
-//				for(int i = 4; i < values.length; ++i){
-//				if(!values[i].isEmpty()){
-//					props.put(columns.get(i), Integer.valueOf(values[i]));
-//				}
-//			}
+
+				//				for(int i = 4; i < values.length; ++i){
+				//				if(!values[i].isEmpty()){
+				//					props.put(columns.get(i), Integer.valueOf(values[i]));
+				//				}
+				//			}
 
 			}
-//			line = readLine();
+			//			line = readLine();
 		} while(currMirId.equals(lineMirId) && line != null);
 
 
 		if(miRFamilies != null){
-			for(String from : miRFamilies.get(fromFam)){
-				res.add(new EdgeData(from, to, EDGE_TYPE, props));
+			if(miRFamilies.containsKey(fromFam)){
+				for(String from : miRFamilies.get(fromFam)){
+					res.add(new EdgeData(from, to, EDGE_TYPE, props));
+				}
 			}
 		} else {
 			res.add(new EdgeData(fromFam, to, EDGE_TYPE, props));
 		}
-		
+
 		if(line != null && !line.isEmpty()){
 			carryOver = line;
 		}
-		
+
 		return res;
 	}
-	
+
 	@Override
 	public boolean ready() throws ParsingErrorException {
 		return super.ready() || carryOver != null;
@@ -126,39 +128,53 @@ public class TargetScanParser extends FileBasedParser<EdgeData> {
 	@Override
 	public void takeExtraParameters(List<String> extras) {
 		log.info("processing extra parameters: " + extras.toString());
-		String famFile = extras.get(0);
-		log.info("using " + famFile + " as miRNA families file");
-		
-		if(extras.size() > 1){
+
+		if(extras != null && !extras.isEmpty()) {
+
+			String famFile = null;
 			organisms =  new HashSet<String>();
-			for(int i = 1; i < extras.size(); ++i){
-				organisms.add(extras.get(i));
+
+			for(String extra : extras){
+				String values[] = extra.split("=",-1);
+
+				switch(values[0]) {
+				case "family":
+					famFile = values[1];
+					break;
+
+				case "organism":
+					organisms.add(values[1]);
+					break;
+				}
+			}
+
+			if(famFile != null && !famFile.isEmpty()){
+				try {
+					log.info("using " + famFile + " as miRNA families file");
+					miRFamilies = new HashMap<String,List<String>>();
+					BufferedReader in = new BufferedReader(new FileReader(famFile));
+
+					while(in.ready()){
+						String line = in.readLine();
+						String[] values = line.split("\t",-1);
+
+						if(organisms != null && !organisms.contains(values[2])){
+							continue;
+						}
+
+						if(!miRFamilies.containsKey(values[0])){
+							miRFamilies.put(values[0], new ArrayList<String>());
+						}
+
+						miRFamilies.get(values[0]).add(values[6]);
+
+					}
+					in.close();
+				} catch (IOException e) {
+					log.severe("failed to open miRNA families file " + famFile);
+				}
 			}
 		}
-		
-		try {
-			miRFamilies = new HashMap<String,List<String>>();
-			BufferedReader in = new BufferedReader(new FileReader(famFile));
-			
-			while(in.ready()){
-				String line = in.readLine();
-				String[] values = line.split("\t",-1);
-				
-				if(organisms != null && !organisms.contains(values[2])){
-					continue;
-				}
-				
-				if(!miRFamilies.containsKey(values[0])){
-					miRFamilies.put(values[0], new ArrayList<String>());
-				}
-				
-				miRFamilies.get(values[0]).add(values[6]);
-				
-			}
-			in.close();
-		} catch (IOException e) {
-			log.warning("failed to open miRNA families file " + famFile);
-		}
-		
+
 	}
 }

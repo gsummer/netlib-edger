@@ -8,11 +8,11 @@ import java.util.logging.Logger;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.networklibrary.core.config.ConfigManager;
 import org.networklibrary.core.parsing.Parser;
 import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.storage.StorageEngine;
 import org.networklibrary.core.types.EdgeData;
+import org.networklibrary.edger.config.EdgerConfigManager;
 import org.networklibrary.edger.parsing.DisgenetParser;
 import org.networklibrary.edger.parsing.EncodeParser;
 import org.networklibrary.edger.parsing.MetaAnalysisParser;
@@ -59,29 +59,24 @@ public class EdgeImporter {
 	}
 	
 	private String db;
-	private String type;
 	private List<String> fileLocs;
-	private ConfigManager confMgr;
+	private EdgerConfigManager confMgr;
 	private List<String> extras;
-	private boolean newNodes;
 
-	public EdgeImporter(String db, String type, List<String> fileLocs,ConfigManager confMgr, List<String> extras, boolean newNodes) {
+	public EdgeImporter(String db, List<String> fileLocs,EdgerConfigManager confMgr, List<String> extras) {
 		this.db = db;
-		this.type = type;
 		this.fileLocs = fileLocs;
 		this.confMgr = confMgr;
 		this.extras = extras;
-		this.newNodes = newNodes;
 	}
 
 	public void execute() throws ParsingErrorException {
 
 		log.info("connecting to db: " + getDb());
 
-//		GraphDatabaseService g = new RestGraphDatabase(db);
 		GraphDatabaseService g = new GraphDatabaseFactory().newEmbeddedDatabase(db);
 
-		StorageEngine<EdgeData> se = new EdgeStorageEngine(g,confMgr,newNodes);
+		StorageEngine<EdgeData> se = new EdgeStorageEngine(g,confMgr);
 
 		long start = System.nanoTime();
 
@@ -120,6 +115,7 @@ public class EdgeImporter {
 		try {
 			log.info("Have type = " + getType() + " -> parser = " + parsers.get(getType()));		
 			p = (Parser<EdgeData>)getParsers().get(getType()).newInstance();
+			p.setDictionary(confMgr);
 		} catch (InstantiationException e) {
 			log.severe("InstantiationException when creating parser for: " + getType() + ": " + e.getMessage());
 			throw new ParsingErrorException(e.getMessage());
@@ -132,7 +128,7 @@ public class EdgeImporter {
 	}
 
 	protected String getType() {
-		return type;
+		return getConfig().getType();
 	}
 
 	protected List<String> getFileLocations() {
@@ -154,7 +150,7 @@ public class EdgeImporter {
 		return buff.toString();
 	}
 
-	protected ConfigManager getConfMgr() {
+	protected EdgerConfigManager getConfig() {
 		return confMgr;
 	}
 

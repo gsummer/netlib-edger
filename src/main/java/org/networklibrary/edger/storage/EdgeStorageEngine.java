@@ -15,27 +15,26 @@ import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexHits;
 import org.networklibrary.core.config.ConfigManager;
+import org.networklibrary.core.config.General;
+import org.networklibrary.core.config.Indexing;
 import org.networklibrary.core.storage.MultiTxStrategy;
 import org.networklibrary.core.types.EdgeData;
+import org.networklibrary.edger.config.EdgerConfigManager;
 
 public class EdgeStorageEngine extends MultiTxStrategy<EdgeData> {
 	protected static final Logger log = Logger.getLogger(EdgeStorageEngine.class.getName());
 
-	private final static String MATCH = "matchid";
-	private final static String DEFAULT_NAME = "name";
 	private Map<String,Set<Node>> nodeCache = new HashMap<String,Set<Node>>();
 
 	private int numEdges = 0;
-	protected boolean newNodes = true;
 	
 	private Index<Node> matchableIndex = null;
 
-	public EdgeStorageEngine(GraphDatabaseService graph, ConfigManager confMgr, boolean newNodes) {
+	public EdgeStorageEngine(GraphDatabaseService graph, ConfigManager confMgr) {
 		super(graph, confMgr);
-		this.newNodes = newNodes;
 		
 		try ( Transaction tx = graph.beginTx() ){
-			matchableIndex = graph.index().forNodes("matchable");
+			matchableIndex = graph.index().forNodes(getIndexing().getPrimaryIndex());
 			tx.success();
 		}
 	}
@@ -91,10 +90,10 @@ public class EdgeStorageEngine extends MultiTxStrategy<EdgeData> {
 		if(result == null){
 			result = new HashSet<Node>();
 
-			IndexHits<Node> hits = matchableIndex.get(MATCH, name);
+			IndexHits<Node> hits = matchableIndex.get(getIndexing().getPrimaryKey(), name);
 
 			if(hits.size() == 0){
-				if(newNodes){
+				if(getEdgerConfig().newNodes()){
 					Node newNode = createNewNode(name,g);
 					result.add(newNode);
 				} else {
@@ -119,10 +118,21 @@ public class EdgeStorageEngine extends MultiTxStrategy<EdgeData> {
 
 	protected Node createNewNode(String name, GraphDatabaseService g) {
 		Node res = g.createNode();
-		res.setProperty(DEFAULT_NAME, name);
-		matchableIndex.add(res, MATCH, name);
+		res.setProperty(getGeneral().getDefaultName(), name);
+		matchableIndex.add(res, getIndexing().getPrimaryKey(), name);
 		
 		return res;
 	}
+	
+	protected EdgerConfigManager getEdgerConfig(){
+		return (EdgerConfigManager)getConfMgr();
+	}
 
+	protected Indexing getIndexing(){
+		return (Indexing)getConfMgr();
+	}
+	
+	protected General getGeneral(){
+		return (General)getConfMgr();
+	}
 }

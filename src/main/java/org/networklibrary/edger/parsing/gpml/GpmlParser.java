@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.networklibrary.core.config.Dictionary;
 import org.networklibrary.core.parsing.Parser;
 import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.types.EdgeData;
@@ -32,6 +33,7 @@ public class GpmlParser implements Parser<EdgeData> {
 
 	private Collection<InteractionType> ignoreInteractions = new HashSet<InteractionType>();
 	private Map<InteractionType, String> edgeTypes;
+	private Dictionary dictionary = null;
 	
 	public GpmlParser() {
 		edgeTypes = new HashMap<InteractionType, String>();
@@ -330,5 +332,10 @@ public class GpmlParser implements Parser<EdgeData> {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void setDictionary(Dictionary dictionary) {
+		this.dictionary = dictionary;
 	}
 }

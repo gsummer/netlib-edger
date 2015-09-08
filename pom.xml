@@ -11,7 +11,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<neo4j>2.1.2</neo4j>
+		<neo4j>2.2.0</neo4j>
 	</properties>
 
 	<build>
@@ -54,7 +54,7 @@
 		<dependency>
 			<groupId>org.networklibrary</groupId>
 			<artifactId>netlib-core</artifactId>
-			<version>0.1.1</version>
+			<version>0.3</version>
 		</dependency>
 
 		<dependency>
@@ -117,6 +117,12 @@
 			<artifactId>jackson-core-asl</artifactId>
 			<version>1.9.13</version>
 		</dependency>
+
+<dependency>
+	<groupId>org.jdom</groupId>
+	<artifactId>jdom</artifactId>
+	<version>1.1</version>
+</dependency>
 
 <dependency>
 	<groupId>org.jdom</groupId>
