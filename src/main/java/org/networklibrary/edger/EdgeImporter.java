@@ -16,6 +16,8 @@ import org.networklibrary.edger.config.EdgerConfigManager;
 import org.networklibrary.edger.parsing.DisgenetParser;
 import org.networklibrary.edger.parsing.EncodeParser;
 import org.networklibrary.edger.parsing.MetaAnalysisParser;
+import org.networklibrary.edger.parsing.MicroTCDSParser;
+import org.networklibrary.edger.parsing.MirDBParser;
 import org.networklibrary.edger.parsing.MirTarBaseParser;
 import org.networklibrary.edger.parsing.TabFileParser;
 import org.networklibrary.edger.parsing.TargetScanParser;
@@ -50,6 +52,8 @@ public class EdgeImporter {
 		addParser("TAB","Tab files", TabFileParser.class);
 		addParser("WP", "WikiPathway GPML", GpmlParser.class);
 		addParser("DGN", "Disgenet Gene-Disease Associations",DisgenetParser.class);
+		addParser("MIRDB", "miRDB", MirDBParser.class);
+		addParser("MICROTCDS", "microT CDS from DIANA", MicroTCDSParser.class);
 		
 	}
 
