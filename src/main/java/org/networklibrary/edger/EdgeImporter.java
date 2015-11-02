@@ -13,8 +13,10 @@ import org.networklibrary.core.parsing.ParsingErrorException;
 import org.networklibrary.core.storage.StorageEngine;
 import org.networklibrary.core.types.EdgeData;
 import org.networklibrary.edger.config.EdgerConfigManager;
+import org.networklibrary.edger.parsing.DgiDbParser;
 import org.networklibrary.edger.parsing.DisgenetParser;
 import org.networklibrary.edger.parsing.EncodeParser;
+import org.networklibrary.edger.parsing.GmtParser;
 import org.networklibrary.edger.parsing.MetaAnalysisParser;
 import org.networklibrary.edger.parsing.MicroTCDSParser;
 import org.networklibrary.edger.parsing.MirDBParser;
@@ -54,7 +56,8 @@ public class EdgeImporter {
 		addParser("DGN", "Disgenet Gene-Disease Associations",DisgenetParser.class);
 		addParser("MIRDB", "miRDB", MirDBParser.class);
 		addParser("MICROTCDS", "microT CDS from DIANA", MicroTCDSParser.class);
-		
+		addParser("GMT", "GMT file importer", GmtParser.class);
+		addParser("DGIDB","DGIdb interactions importer",DgiDbParser.class);
 	}
 
 	public static void addParser(String cmd, String name, Class parser){
