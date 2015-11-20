@@ -17,6 +17,7 @@ public class GmtParser extends FileBasedParser<EdgeData> {
 	protected String source = "unknown";
 	protected String type = "gmt_association";
 	protected int idcol = 0;
+	protected String idprefix = ""; // a fix for reactome
 	
 	@Override
 	public Collection<EdgeData> parse() throws ParsingErrorException {
@@ -35,7 +36,7 @@ public class GmtParser extends FileBasedParser<EdgeData> {
 			
 			String[] col0 = values[idcol].split("%", -1);
 			
-			String id = col0[col0.length-1];
+			String id = idprefix + col0[col0.length-1];
 			
 			Map<String,Object> props = new HashMap<String,Object>();
 			props.put("data_source", source);	
@@ -74,6 +75,10 @@ public class GmtParser extends FileBasedParser<EdgeData> {
 					
 				case "idcol":
 					idcol = Integer.valueOf(values[1]);
+					break;
+					
+				case "idprefix":
+					idprefix = values[1];
 					break;
 				}
 			}
