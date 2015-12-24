@@ -45,12 +45,8 @@ public static String SOURCE_NAME = "stitch_actions";
 			String from = values[0];
 			String to = values[1];
 			
-			if(from.contains("9606.")){
-				from = from.replace("9606.","");
-			}
-			if(to.contains("9606.")){
-				to = to.replace("9606.","");
-			}
+			from = from.replaceFirst("[0-9]+\\.","");
+			to = to.replaceFirst("[0-9]+\\.","");
 			
 			res.add(new EdgeData(from,to,values[2],props));
 			if("0".equals(values[4]) && !from.equals(to)){
@@ -58,7 +54,6 @@ public static String SOURCE_NAME = "stitch_actions";
 			}
 			
 		}
-		
 		return res;
 	}
 
