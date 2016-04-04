@@ -85,7 +85,8 @@ public class TargetScanParser extends FileBasedParser<EdgeData> {
 
 
 				fromFam = values[0];
-				to = values[1];
+//				to = values[1];
+				to = values[1].replaceFirst("\\.[0-9]+", "");
 
 				//				for(int i = 4; i < values.length; ++i){
 				//				if(!values[i].isEmpty()){
