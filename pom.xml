@@ -4,7 +4,7 @@
 
 	<groupId>org.networklibrary</groupId>
 	<artifactId>netlib-edger</artifactId>
-	<version>0.1</version>
+	<version>1.1</version>
 	<packaging>jar</packaging>
 
 	<name>netlib-edger</name>
@@ -54,7 +54,7 @@
 		<dependency>
 			<groupId>org.networklibrary</groupId>
 			<artifactId>netlib-core</artifactId>
-			<version>0.3</version>
+			<version>1.0</version>
 		</dependency>
 
 		<dependency>

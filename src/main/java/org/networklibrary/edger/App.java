@@ -30,7 +30,6 @@ public class App
 		Option dbop = OptionBuilder.withArgName("[URL]").hasArg().withDescription("Neo4j instance to prime").withLongOpt("target").withType(String.class).create("db");
 		Option typeop = OptionBuilder.withArgName("[TYPE]").hasArg().withDescription("Types available:").withType(String.class).create("t");
 		Option parserClassesOp = OptionBuilder.withArgName("[CLASS:TYPE]").hasArg().withDescription("Additional parser classes to load (e.g. org.my.EdgeParser:MYPARSER").withLongOpt("parsers").withType(String.class).create("p");
-		Option configOp = OptionBuilder.hasArg().withDescription("Alternative config file").withLongOpt("config").withType(String.class).create("c");
 		Option extraOps = OptionBuilder.hasArg().withDescription("Extra configuration parameters for the import").withType(String.class).create("x");
 
 		Option newNodeOps = new Option("new_nodes",false,"unknown primary ids will create new nodes");
@@ -41,7 +40,6 @@ public class App
 		options.addOption(help);
 		options.addOption(dbop);
 		options.addOption(typeop);
-		options.addOption(configOp);
 		options.addOption(extraOps);
 		options.addOption(parserClassesOp);
 		options.addOption(newNodeOps);
@@ -80,11 +78,6 @@ public class App
 				type = line.getOptionValue("t");
 			}
 
-			String config = null;
-			if(line.hasOption("c")){
-				config = line.getOptionValue("c");
-			}
-
 			List<String> extras = null;
 			if(line.hasOption("x")){
 				extras = Arrays.asList(line.getOptionValues("x"));
@@ -99,9 +92,6 @@ public class App
 
 			List<String> inputFiles = line.getArgList();
 
-			if(config != null && !config.isEmpty()){
-				log.info("user-supplied config file used: " + config);
-			}
 			EdgerConfigManager confMgr = new EdgerConfigManager(type,dictionary,newNodes);
 
 			EdgeImporter ei = new EdgeImporter(db,inputFiles,confMgr,extras);
