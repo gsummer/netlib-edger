@@ -15,9 +15,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
@@ -50,7 +52,24 @@ public class TfeParser implements Parser<EdgeData> {
 	public void setDataSource(String location) throws ParsingErrorException {
 		// ignore what ever comes around (because as of now a dummy is required
 		try {
-			tfeIDs = Request.Get(ALL_CODES).execute().handleResponse(new TFeIDsResponseHandler());
+			boolean isCache = cachePath != null && new File(cachePath, "alltfeids").exists();
+			if(!isCache || !new File(cachePath, "alltfeids").exists()) {
+				log.info("Loading all TFe IDs");
+				tfeIDs = Request.Get(ALL_CODES).execute().handleResponse(new TFeIDsResponseHandler());
+				if(cachePath != null) {
+					BufferedWriter w = new BufferedWriter(new FileWriter(new File(cachePath, "alltfeids")));
+					w.write(StringUtils.join(tfeIDs, "\n"));
+					w.close();
+				}
+			} else {
+				log.info("Using cached TFe IDs");
+				tfeIDs = new ArrayList<String>();
+				Scanner s = new Scanner(new File(cachePath, "alltfeids"));
+				while (s.hasNext()){
+				    tfeIDs.add(s.next());
+				}
+				s.close();
+			}
 		} catch (IOException e) {
 			throw new ParsingErrorException("failure to test TFe",e);
 		}
