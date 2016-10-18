@@ -54,7 +54,7 @@ public class DisgenetParser extends FileBasedParser<EdgeData> {
 				props.put(columns.get(8), sources);
 				props.put("data_source",SOURCE_NAME);
 
-				res.add(new EdgeData(values[1],values[3],EDGE_TYPE,props));
+				res.add(new EdgeData(values[0],values[3],EDGE_TYPE,props));
 			}
 
 		}
