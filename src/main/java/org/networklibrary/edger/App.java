@@ -36,7 +36,6 @@ public class App
 		
 		Option dictionaryOp = OptionBuilder.hasArg().withDescription("Dictionary file to use").withLongOpt("dictionary").withType(String.class).create("d");
 		
-
 		options.addOption(help);
 		options.addOption(dbop);
 		options.addOption(typeop);

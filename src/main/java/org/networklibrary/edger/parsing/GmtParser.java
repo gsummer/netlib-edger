@@ -19,6 +19,7 @@ public class GmtParser extends FileBasedParser<EdgeData> {
 	protected int idcol = 0;
 	protected String idprefix = ""; // a fix for reactome
 	protected String format = "broad";
+	protected String filterOrganism = null;
 
 	@Override
 	public Collection<EdgeData> parse() throws ParsingErrorException {
@@ -37,7 +38,7 @@ public class GmtParser extends FileBasedParser<EdgeData> {
 
 			String id = getId(values[0]);
 		
-			System.out.println("using id: " + id);
+//			System.out.println("using id: " + id);
 			if(id != null){
 
 				Map<String,Object> props = new HashMap<String,Object>();
@@ -78,7 +79,13 @@ public class GmtParser extends FileBasedParser<EdgeData> {
 	protected String getWPId(String col0){
 		String[] values = col0.split("%",-1);
 
-		return values[2];
+		String organism = values[3];
+		
+		if(filterOrganism != null && filterOrganism.toLowerCase().equals(organism.toLowerCase())){
+			return values[2];
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -113,6 +120,10 @@ public class GmtParser extends FileBasedParser<EdgeData> {
 
 				case "format":
 					format = values[1];
+					break;
+					
+				case "organism":
+					filterOrganism = values[1];
 					break;
 				}
 			}

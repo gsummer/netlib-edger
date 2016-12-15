@@ -102,7 +102,7 @@ public class EdgeStorageEngine extends MultiTxStrategy<EdgeData> {
 
 			} else {
 				if(hits.size() > 1){
-					log.warning("query for name = " + name + " returned more than one hit.");
+					log.info("query for name = " + name + " returned more than one hit.");
 				}
 
 				for(Node n : hits){
