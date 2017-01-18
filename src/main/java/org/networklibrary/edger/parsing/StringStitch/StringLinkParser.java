@@ -52,7 +52,7 @@ public class StringLinkParser extends FileBasedParser<EdgeData> {
 				String from = values[0].replaceFirst("[0-9]+\\.", "");
 				String to = values[1].replaceFirst("[0-9]+\\.", "");
 
-				// TODO really? only one?
+				// TODO really? only one? yes because string has both
 				res.add(new EdgeData(from,to,EDGE_TYPE,props));
 			}
 

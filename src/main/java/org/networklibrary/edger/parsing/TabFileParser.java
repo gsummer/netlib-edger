@@ -22,7 +22,7 @@ public class TabFileParser extends FileBasedParser<EdgeData>{
 	protected String edgeType = null;
 	protected String source = "unknown";
 	protected String sep = "\t";
-	protected int currI = 0;
+//	protected int currI = 0;
 
 	public boolean hasHeader() {
 		return header;
@@ -88,10 +88,10 @@ public class TabFileParser extends FileBasedParser<EdgeData>{
 		List<EdgeData> res = null;
 
 		String line = readLine();
-		++currI;
+//		++currI;
 
-		if(currI % 10000 == 0)
-			System.out.println("at line: " + currI);
+//		if(currI % 10000 == 0)
+//			System.out.println("at line: " + currI);
 
 		if(line != null && !line.isEmpty()){
 			res = new ArrayList<EdgeData>();

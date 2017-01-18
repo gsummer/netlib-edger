@@ -81,7 +81,12 @@ public class EdgeImporter {
 
 		log.info("connecting to db: " + getDb());
 
-		GraphDatabaseService g = new GraphDatabaseFactory().newEmbeddedDatabase(db);
+		if(getDb() == null || getDb().isEmpty()){
+			log.severe("no db supplied!");
+			return;
+		}
+		
+		GraphDatabaseService g = new GraphDatabaseFactory().newEmbeddedDatabase(getDb());
 
 		StorageEngine<EdgeData> se = new EdgeStorageEngine(g,confMgr);
 
