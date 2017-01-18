@@ -39,27 +39,6 @@ public class StitchActionsParser extends FileBasedParser<EdgeData> {
 
 			//			item_id_a       item_id_b       mode    action  a_is_acting     score
 			
-<<<<<<< HEAD
-//			item_id_a       item_id_b       mode    action  a_is_acting     score
-			Map<String,Object> props = new HashMap<String,Object>();
-			
-			if(!values[3].isEmpty()){
-				props.put("action", values[3]);
-			}
-			
-			props.put("score", Integer.parseInt(values[5]));
-			
-			props.put("data_source",SOURCE_NAME);
-			String from = values[0];
-			String to = values[1];
-			
-			from = from.replaceFirst("[0-9]+\\.","");
-			to = to.replaceFirst("[0-9]+\\.","");
-			
-			res.add(new EdgeData(from,to,values[2],props));
-			if("0".equals(values[4]) && !from.equals(to)){
-				res.add(new EdgeData(to,from,values[2],props));
-=======
 			if(organism == null || (values[0].startsWith(organism) && values[1].startsWith(organism))){
 				
 				Map<String,Object> props = new HashMap<String,Object>();
@@ -79,14 +58,10 @@ public class StitchActionsParser extends FileBasedParser<EdgeData> {
 				if("0".equals(values[4]) && !from.equals(to)){
 					res.add(new EdgeData(to,from,values[2],props));
 				}
->>>>>>> upstream/master
 			}
 
 		}
-<<<<<<< HEAD
-=======
 
->>>>>>> upstream/master
 		return res;
 	}
 
