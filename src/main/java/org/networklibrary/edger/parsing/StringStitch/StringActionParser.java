@@ -29,9 +29,9 @@ public class StringActionParser extends FileBasedParser<EdgeData> {
 	public StringActionParser(){
 		edgeTypes = new HashMap<String, String>();
 		edgeTypes.put("binding", EdgeTypes.INTERACTS_WITH);
-		edgeTypes.put("ptmod", EdgeTypes.INTERACTS_WITH);
-		edgeTypes.put("activation", EdgeTypes.INTERACTS_WITH);
-		edgeTypes.put("expression", EdgeTypes.INTERACTS_WITH);
+		edgeTypes.put("ptmod", EdgeTypes.MODIFIES_PROTEIN);
+		edgeTypes.put("activation", EdgeTypes.ACTIVATES);
+		edgeTypes.put("expression", EdgeTypes.REGULATES_TRANSCRIPTION);
 		edgeTypes.put("reaction", EdgeTypes.IN_SAME_REACTION);
 		edgeTypes.put("catalysis", EdgeTypes.CATALYZES);
 	}
