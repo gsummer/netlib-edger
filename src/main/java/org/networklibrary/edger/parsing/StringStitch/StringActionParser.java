@@ -51,17 +51,17 @@ public class StringActionParser extends FileBasedParser<EdgeData> {
 
 			//	item_id_a	item_id_b	mode	action	a_is_acting	score	sources	transferred_sources
 
-			int score = Integer.parseInt(values[5]);
+			int score = Integer.parseInt(values[6]);
 
 			if(score > cutoff){
 
 				Map<String,Object> props = new HashMap<String,Object>();
 
 				//Only parse source attribute if actions.detailed available
-				if(values.length > 6) {
-					String oSource = values[7];
+				if(values.length > 7) {
+					String oSource = values[8];
 					if(oSource.isEmpty() || oSource == null){
-						oSource = values[6];
+						oSource = values[7];
 					}
 					props.put("orig_source", oSource);
 				}
@@ -82,7 +82,7 @@ public class StringActionParser extends FileBasedParser<EdgeData> {
 					String to = values[1].replaceFirst("[0-9]+\\.","");
 					
 					res.add(new EdgeData(from,to,type,props));
-					if("0".equals(values[4])){
+					if("f".equals(values[4])){
 						res.add(new EdgeData(to,from,type,props));
 					}
 				} else {
