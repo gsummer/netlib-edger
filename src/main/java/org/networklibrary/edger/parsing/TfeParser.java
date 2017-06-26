@@ -177,12 +177,16 @@ public class TfeParser implements Parser<EdgeData> {
 		if(!"".equals(content)) {
 			for(String line : content.split("\n")) {
 				String[] values = line.split("\t",-1);
-				String to = values[0];
+				String to = "http://identifiers.org/ncbigene/" + values[0];
 				
 				Map<String,Object> props = new HashMap<String,Object>();
 				for(int i = 2; i < values.length; ++i){
 					if(!values[i].isEmpty()){
-						props.put(columns.get(i), values[i]);
+						if(i==4){
+							props.put(columns.get(i), "http://identifiers.org/pubmed/" + values[i]);
+						} else {
+							props.put(columns.get(i), values[i]);
+						}
 					}
 				}
 				props.put("data_source",SOURCE_NAME);
@@ -195,7 +199,7 @@ public class TfeParser implements Parser<EdgeData> {
 					type = EdgeTypes.INHIBITS_TRANSCRIPTION;
 				}
 				
-				res.add(new EdgeData(from, to, type, props));
+				res.add(new EdgeData("http://identifiers.org/ensembl/" + from, to, type, props));
 			}
 		}
 		

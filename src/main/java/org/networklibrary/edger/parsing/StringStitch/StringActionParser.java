@@ -78,8 +78,8 @@ public class StringActionParser extends FileBasedParser<EdgeData> {
 				
 				props.put("data_source",SOURCE_NAME);
 				if(speciesCode == -1 || (values[0].startsWith(speciesCode + ".") && values[1].startsWith(speciesCode + "."))) {
-					String from = values[0].replaceFirst("[0-9]+\\.","");
-					String to = values[1].replaceFirst("[0-9]+\\.","");
+					String from = values[0].replaceFirst("[0-9]+\\.","http://identifiers.org/ensembl/");
+					String to = values[1].replaceFirst("[0-9]+\\.","http://identifiers.org/ensembl/");
 					
 					res.add(new EdgeData(from,to,type,props));
 					if("f".equals(values[4])){
