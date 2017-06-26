@@ -1,5 +1,6 @@
 package org.networklibrary.edger;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,7 +87,7 @@ public class EdgeImporter {
 			return;
 		}
 		
-		GraphDatabaseService g = new GraphDatabaseFactory().newEmbeddedDatabase(getDb());
+		GraphDatabaseService g = new GraphDatabaseFactory().newEmbeddedDatabase(new File(getDb()));
 
 		StorageEngine<EdgeData> se = new EdgeStorageEngine(g,confMgr);
 

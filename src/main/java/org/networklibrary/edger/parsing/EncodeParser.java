@@ -29,8 +29,8 @@ public class EncodeParser extends FileBasedParser<EdgeData> {
 			if(values.length == 1) // distal uses tabs
 				values = line.split("\t",-1); // encode sucks
 	
-			String from = values[0];
-			String to = values[2];
+			String from = "http://identifiers.org/hgnc.symbol/" + values[0];
+			String to = "http://identifiers.org/hgnc.symbol/" + values[2];
 			
 			Map<String,Object> props = new HashMap<String,Object>();
 			props.put("category", values[1]);

@@ -51,8 +51,8 @@ public class StitchActionsParser extends FileBasedParser<EdgeData> {
 				props.put("data_source",SOURCE_NAME);
 
 				
-				String from = values[0].replaceFirst("[0-9]+\\.", "");
-				String to = values[1].replaceFirst("[0-9]+\\.", "");
+				String from = values[0].replaceFirst("[0-9]+\\.", "http://identifiers.org/ensembl/");
+				String to = values[1].replaceFirst("[0-9]+\\.", "http://identifiers.org/ensembl/");
 
 				res.add(new EdgeData(from,to,values[2],props));
 				if("0".equals(values[4]) && !from.equals(to)){

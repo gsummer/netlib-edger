@@ -29,9 +29,9 @@ public class StringActionParser extends FileBasedParser<EdgeData> {
 	public StringActionParser(){
 		edgeTypes = new HashMap<String, String>();
 		edgeTypes.put("binding", EdgeTypes.INTERACTS_WITH);
-		edgeTypes.put("ptmod", EdgeTypes.INTERACTS_WITH);
-		edgeTypes.put("activation", EdgeTypes.INTERACTS_WITH);
-		edgeTypes.put("expression", EdgeTypes.INTERACTS_WITH);
+		edgeTypes.put("ptmod", EdgeTypes.MODIFIES_PROTEIN);
+		edgeTypes.put("activation", EdgeTypes.ACTIVATES);
+		edgeTypes.put("expression", EdgeTypes.REGULATES_TRANSCRIPTION);
 		edgeTypes.put("reaction", EdgeTypes.IN_SAME_REACTION);
 		edgeTypes.put("catalysis", EdgeTypes.CATALYZES);
 	}
@@ -78,8 +78,8 @@ public class StringActionParser extends FileBasedParser<EdgeData> {
 				
 				props.put("data_source",SOURCE_NAME);
 				if(speciesCode == -1 || (values[0].startsWith(speciesCode + ".") && values[1].startsWith(speciesCode + "."))) {
-					String from = values[0].replaceFirst("[0-9]+\\.","");
-					String to = values[1].replaceFirst("[0-9]+\\.","");
+					String from = values[0].replaceFirst("[0-9]+\\.","http://identifiers.org/ensembl/");
+					String to = values[1].replaceFirst("[0-9]+\\.","http://identifiers.org/ensembl/");
 					
 					res.add(new EdgeData(from,to,type,props));
 					if("0".equals(values[4])){

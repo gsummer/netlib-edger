@@ -19,7 +19,7 @@ public class DisgenetParser extends FileBasedParser<EdgeData> {
 
 	public static String SOURCE_NAME = "disgenet";
 	public static String EDGE_TYPE = EdgeTypes.DGN_ASSOCIATION;
-	
+
 	private List<String> columns = null;
 
 	protected double cutoff = 0;
@@ -41,29 +41,29 @@ public class DisgenetParser extends FileBasedParser<EdgeData> {
 
 			//	geneId	geneSymbol	geneName	diseaseId	diseaseName	score	NumberOfPubmeds	associationType	source
 
-			double score = Double.valueOf(values[5]);
+			Map<String, Integer> columnIndices = new HashMap<String, Integer>();
+			for(int i = 0; i < columns.size(); i++) {
+				columnIndices.put(columns.get(i), i);
+			}
+			
+			double score = Double.valueOf(columnIndices.get("score"));
 			if(score > cutoff){
 				Map<String,Object> props = new HashMap<String,Object>();
 
 				props.put("score",score);
-				props.put(columns.get(6), Integer.valueOf(values[6]));
-				props.put(columns.get(7), values[7]);
-				String[] sources = values[8].split(", ",-1);
-				
-				props.put("associations", getAssociations(values[7]));
-				props.put(columns.get(8), sources);
+				props.put("NofPmids", Integer.valueOf(values[columnIndices.get("NofPmids")]));
+				props.put("NofSnps", Integer.valueOf(values[columnIndices.get("NofSnps")]));
+				String[] sources = values[columnIndices.get("source")].split(";",-1);
+
+				props.put("source", sources);
 				props.put("data_source",SOURCE_NAME);
 
-				res.add(new EdgeData(values[1],values[3],EDGE_TYPE,props));
+				res.add(new EdgeData(values[columnIndices.get("geneId")],values[columnIndices.get("diseaseId")],EDGE_TYPE,props));
 			}
 
 		}
 
 		return res;
-	}
-	
-	private String[] getAssociations(String disgenetType){
-		return disgenetType.split(", ");
 	}
 
 //	private String getEdgeType(String disgenetType) {
@@ -79,11 +79,11 @@ public class DisgenetParser extends FileBasedParser<EdgeData> {
 //		case "Therapeutic":
 //			return EdgeTypes.THERAPEUTIC_ROLE_IN;
 //		}
-//		
+//
 //		log.warning("Edge type for " + disgenetType + " not found!");
 //		return disgenetType;
 //	}
-	
+
 	@Override
 	public boolean hasExtraParameters() {
 		return true;
@@ -115,7 +115,7 @@ public class DisgenetParser extends FileBasedParser<EdgeData> {
 
 	@Override
 	protected void parseHeader(String header) {
-		columns = Arrays.asList(header.split("\\s",-1));	
+		columns = Arrays.asList(header.split("\\s",-1));
 	}
 
 }

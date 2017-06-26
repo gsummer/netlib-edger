@@ -15,13 +15,17 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.fluent.Request;
+import org.apache.http.util.EntityUtils;
 import org.networklibrary.core.config.Dictionary;
 import org.networklibrary.core.parsing.Parser;
 import org.networklibrary.core.parsing.ParsingErrorException;
@@ -50,7 +54,24 @@ public class TfeParser implements Parser<EdgeData> {
 	public void setDataSource(String location) throws ParsingErrorException {
 		// ignore what ever comes around (because as of now a dummy is required
 		try {
-			tfeIDs = Request.Get(ALL_CODES).execute().handleResponse(new TFeIDsResponseHandler());
+			boolean isCache = cachePath != null && new File(cachePath, "alltfeids").exists();
+			if(!isCache || !new File(cachePath, "alltfeids").exists()) {
+				log.info("Loading all TFe IDs");
+				tfeIDs = Request.Get(ALL_CODES).execute().handleResponse(new TFeIDsResponseHandler());
+				if(cachePath != null) {
+					BufferedWriter w = new BufferedWriter(new FileWriter(new File(cachePath, "alltfeids")));
+					w.write(StringUtils.join(tfeIDs, "\n"));
+					w.close();
+				}
+			} else {
+				log.info("Using cached TFe IDs");
+				tfeIDs = new ArrayList<String>();
+				Scanner s = new Scanner(new File(cachePath, "alltfeids"));
+				while (s.hasNext()){
+				    tfeIDs.add(s.next());
+				}
+				s.close();
+			}
 		} catch (IOException e) {
 			throw new ParsingErrorException("failure to test TFe",e);
 		}
@@ -99,9 +120,7 @@ public class TfeParser implements Parser<EdgeData> {
 					from = r.readLine();
 					r.close();
 				}
-				BufferedReader reader = new BufferedReader(new FileReader(new File(cachePath, tfeID)));
-				res = parseTF(tfeID, from, reader, false);
-				reader.close();
+				res = parseTF(tfeID, from, FileUtils.readFileToString(new File(cachePath, tfeID)), false);
 			}
 
 			++tfeIDsDone;
@@ -140,7 +159,7 @@ public class TfeParser implements Parser<EdgeData> {
 		log.info("Caching API requests to " + cachePath);
 	}
 
-	private List<EdgeData> parseTF(String tfeID, String from, BufferedReader reader, boolean writeCache) throws IOException {
+	private List<EdgeData> parseTF(String tfeID, String from, String content, boolean writeCache) throws IOException {
 		List<String> columns = new ArrayList<String>();
 		columns.add("Entrez Gene ID");
 		columns.add("Target gene symbol");
@@ -151,38 +170,39 @@ public class TfeParser implements Parser<EdgeData> {
 
 		List<EdgeData> res = new LinkedList<EdgeData>();
 		
-		BufferedWriter cache = null;
 		if(writeCache && cachePath != null) {
-			cache = new BufferedWriter(new FileWriter(new File(cachePath, tfeID)));
+			FileUtils.writeStringToFile(new File(cachePath, tfeID), content);
 		}
 		
-		while(reader.ready()){
-			String line = reader.readLine();
-			if(cache != null) cache.write(line + "\n");
-			
-			String[] values = line.split("\t",-1);
-			String to = values[0];
-			
-			Map<String,Object> props = new HashMap<String,Object>();
-			for(int i = 2; i < values.length; ++i){
-				if(!values[i].isEmpty()){
-					props.put(columns.get(i), values[i]);
+		if(!"".equals(content)) {
+			for(String line : content.split("\n")) {
+				String[] values = line.split("\t",-1);
+				String to = "http://identifiers.org/ncbigene/" + values[0];
+				
+				Map<String,Object> props = new HashMap<String,Object>();
+				for(int i = 2; i < values.length; ++i){
+					if(!values[i].isEmpty()){
+						if(i==4){
+							props.put(columns.get(i), "http://identifiers.org/pubmed/" + values[i]);
+						} else {
+							props.put(columns.get(i), values[i]);
+						}
+					}
 				}
+				props.put("data_source",SOURCE_NAME);
+				
+				String type = EdgeTypes.REGULATES_TRANSCRIPTION;
+				if("UP-REGULATION".equals(values[columns.indexOf("Regulatory effect on target")])) {
+					type = EdgeTypes.ACTIVATES_TRANSCRIPTION;
+				}
+				if("DOWN-REGULATION".equals(values[columns.indexOf("Regulatory effect on target")])) {
+					type = EdgeTypes.INHIBITS_TRANSCRIPTION;
+				}
+				
+				res.add(new EdgeData("http://identifiers.org/ensembl/" + from, to, type, props));
 			}
-			props.put("data_source",SOURCE_NAME);
-			
-			String type = EdgeTypes.REGULATES_TRANSCRIPTION;
-			if("UP-REGULATION".equals(values[columns.indexOf("Regulatory effect on target")])) {
-				type = EdgeTypes.ACTIVATES_TRANSCRIPTION;
-			}
-			if("DOWN-REGULATION".equals(values[columns.indexOf("Regulatory effect on target")])) {
-				type = EdgeTypes.INHIBITS_TRANSCRIPTION;
-			}
-			
-			res.add(new EdgeData(from, to, type, props));
 		}
 		
-		if(cache != null) cache.close();
 		return res;
 	}
 		
@@ -234,10 +254,9 @@ public class TfeParser implements Parser<EdgeData> {
 				throws ClientProtocolException, IOException {
 
 			int code = response.getStatusLine().getStatusCode();
-
 			if(code >= 200 && code <= 300){
-				BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-				return parseTF(tfeID, from, reader,true);
+				String content = EntityUtils.toString(response.getEntity());
+				return parseTF(tfeID, from, content,true);
 			} else {
 				return null;
 			}

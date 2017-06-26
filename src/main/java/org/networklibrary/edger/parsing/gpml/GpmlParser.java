@@ -35,6 +35,8 @@ public class GpmlParser implements Parser<EdgeData> {
 	private Map<InteractionType, String> edgeTypes;
 	private Dictionary dictionary = null;
 	
+	private String data_source = "gpml";
+	
 	public GpmlParser() {
 		edgeTypes = new HashMap<InteractionType, String>();
 		edgeTypes.put(InteractionType.BINDING, EdgeTypes.INTERACTS_WITH);
@@ -245,11 +247,26 @@ public class GpmlParser implements Parser<EdgeData> {
 
 	@Override
 	public boolean hasExtraParameters() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public void takeExtraParameters(List<String> extras) {
+		if(extras != null){
+			log.info("processing extra parameters: " + extras.toString());
+
+			for(String extra : extras){
+				String values[] = extra.split("=",-1);
+
+				switch(values[0]) {
+				case "data_source":
+					data_source = values[1];
+					break;
+				}
+			}
+
+			log.info("using data_source =" + data_source);
+		}
 	}
 
 
@@ -306,7 +323,7 @@ public class GpmlParser implements Parser<EdgeData> {
 		
 		String pathwayId = currPathway.getMappInfo().getDynamicProperty("pathwayId");
 		
-		props.put("data_source", "gpml");
+		props.put("data_source", data_source);
 		
 		if(pathwayId != null && !pathwayId.isEmpty())
 			props.put("data_source_pathway", currPathway.getMappInfo().getDynamicProperty("pathwayId"));
